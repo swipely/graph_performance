@@ -166,30 +166,17 @@ Tada - Got 51 of 100 edges using vci!
 Times are from the profiled code block, best of 3 executions
 Using Titan Dynamo backend with '--inmemeory'
 #### VCI
-| Ticket  | Samples | Time(s)|
-| ------: | ------: | ------:|
-| 100     | 10      | 0.81   |
-| 1000    | 10      | 0.74   |
-| 10000   | 10      | 0.87   |
-| 100000  | 10      |        |
-| 10000   | 1       | 0.36   |
-| 10000   | 50      | 0.54   |
-| 10000   | 100     | 1.25   |
-| 10000   | 1000    | 6.06   |
-
-#### Filter
-| Ticket  | Samples | Time |
-| ------: | ------: | ------:|
-| 100     | 10      | 0.23   |
-| 1000    | 10      | 0.33   |
-| 10000   | 10      | 0.53   |
-| 100000  | 10      |        |
-| 10000   | 1       | 0.25   |
-| 10000   | 50      | 3.55   |
-| 10000   | 100     | 6.62   |
-| 10000   | 1000    | 63.7   |
-
-
+| Ticket  | Samples | VCI    (s)| Filter (s) | Ext    (s) |
+| ------: | ------: | ---------:| ----------:| ----------:|
+| 100     | 10      | 0.81      | 0.23       | 0.24       |
+| 1000    | 10      | 0.74      | 0.33       | 0.33       |
+| 10000   | 10      | 0.87      | 0.46       | 0.43       |
+| 100000  | 10      | 0.84      | 0.97       | N/A        |
+| 10000   | 1       | 0.25      | 0.36       | 0.36       |
+| 10000   | 50      | 3.55      | 0.54       | 0.60       |
+| 10000   | 100     | 6.62      | 1.01       | 0.95       |
+| 10000   | 1000    | 63.7      | 6.06       | 6.46       |
+Did not test the ext method with the largest graph.
 
 ### Environment
 #### System
@@ -232,4 +219,3 @@ Run with:
 
 ### Bundled Gems and Jars
 See Jarfile.lock and Gemfile.lock for more details...
-

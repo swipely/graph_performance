@@ -12,9 +12,11 @@ java_import 'com.tinkerpop.blueprints.Vertex'
 # To create a store with data_size tickets and write out sample_size samples
 # for testing
 
+# get data size and set a reasonable default
 data_size = ARGV[0].to_i
 data_size = 100 if data_size == 0
 
+# get sample size and set a reasonable default
 sample_size = ARGV[1].to_i
 sample_size = 100 if sample_size == 0
 
@@ -60,6 +62,8 @@ g.transaction do
 
     tuples << props if i % [1, data_size/sample_size].max == 0
     store_vertex.add_edges_to(:tickets, ticket_vertex, props)
+
+    g.commit_implicit_transaction if i % 1000 == 0
 
   end
 end

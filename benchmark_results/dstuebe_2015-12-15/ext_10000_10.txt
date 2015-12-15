@@ -1,0 +1,59 @@
+starting script
+Got store vertex in: 0.178 seconds
+Getting vertex by edge properties
+last ticket {"date"=>"2015-01-30", "ticket_id"=>"96797"}
+Total time: 0.46
+
+     total        self    children       calls  method
+----------------------------------------------------------------
+      0.46        0.00        0.46         238  Array#each
+      0.43        0.00        0.43          11  Enumerable.first
+      0.43        0.00        0.43          11  Pacer::Core::Route.each
+      0.42        0.00        0.42          11  Java::ComTinkerpopPipes::AbstractPipe#next
+      0.42        0.00        0.42          11  Pacer::Pipes::WrappingPipe#processNextStart
+      0.42        0.42        0.00          11  Java::ComTinkerpopPipesTransform::InVertexPipe#next
+      0.03        0.00        0.03          11  Extensions::Store::Route.tickets
+      0.02        0.00        0.02          44  Pacer::RouteBuilder#chain
+      0.02        0.00        0.02          11  Pacer::Core::Graph::VerticesRoute.out_e
+      0.01        0.00        0.01          33  Pacer::Core::Route.chain_route
+      0.01        0.00        0.01          22  Pacer::Route.property_filter
+      0.01        0.00        0.01         180  Class#new
+      0.01        0.00        0.01          11  Pacer::Core::Graph::VerticesRoute.outE
+      0.01        0.00        0.01          11  Pacer::Core::Graph::EdgesRoute.in_v
+      0.01        0.00        0.01          44  Pacer::RouteBuilder#type_def
+      0.01        0.00        0.01          11  Pacer::Wrappers::ElementWrapper#chain_route
+      0.01        0.00        0.01         660  Kernel.send
+      0.01        0.00        0.01        1034  Hash#[]
+      0.01        0.00        0.01          11  Pacer::Core::Route.iterator
+      0.00        0.00        0.00          66  ConcreteJavaProxy.new
+      0.00        0.00        0.00          33  Pacer::Core::Route.build_pipeline
+      0.00        0.00        0.00          44  Pacer::Core::Route.pipe_source
+      0.00        0.00        0.00          44  Pacer::RouteBuilder#extension_modules
+      0.00        0.00        0.00          11  Pacer::Core::Graph::EdgesRoute.inV
+      0.00        0.00        0.00          44  Pacer::RouteBuilder#configuration
+      0.00        0.00        0.00          11  Pacer::Filter::PropertyFilter.build_pipeline
+      0.00        0.00        0.00          44  Pacer::RouteBuilder#all_extensions
+      0.00        0.00        0.00         220  Pacer::RouteBuilder#element_type
+      0.00        0.00        0.00         517  Hash#fetch
+      0.00        0.00        0.00          11  Pacer::Core::Graph::ElementRoute.configure_iterator
+      0.00        0.00        0.00          88  Pacer::RouteBuilder#extensions
+      0.00        0.00        0.00          11  Pacer::Filter::PropertyFilter::EdgeFilters#build_pipeline
+      0.00        0.00        0.00          11  Pacer::Pipes::WrappingPipe#initialize
+      0.00        0.00        0.00          11  Pacer::Filter::PropertyFilter::Filters#build_pipeline
+      0.00        0.00        0.00         164  Array#eql?
+      0.00        0.00        0.00         528  Pacer::RouteBuilder#source_value
+      0.00        0.00        0.00          88  Pacer::RouteBuilder#function_modules
+      0.00        0.00        0.00          88  Pacer::RouteBuilder#wrapper
+      0.00        0.00        0.00          33  Pacer::Route.edge_filters
+      0.00        0.00        0.00         132  Pacer::RouteBuilder#type_from_source?
+      0.00        0.00        0.00          11  Pacer::Wrappers::WrapperSelector.build
+      0.00        0.00        0.00          11  Pacer::Wrappers::VertexWrapper.wrapper_for
+      0.00        0.00        0.00         264  Pacer::RouteBuilder#graph
+      0.00        0.00        0.00          88  Pacer::FunctionResolver.function
+      0.00        0.00        0.00          22  Pacer::Filter::PropertyFilter::EdgeFilters#initialize
+      0.00        0.00        0.00          11  Pacer::Core::Graph::VerticesRoute.extract_labels
+      0.00        0.00        0.00          22  Pacer::Filter::PropertyFilter::Filters#initialize
+      0.00        0.00        0.00          66  ConcreteJavaProxy#initialize
+      0.00        0.00        0.00         231  Pacer::Core::Route.graph
+      0.00        0.00        0.00          44  Pacer::RouteBuilder#type_modules
+Tada - Got 11 of 10000 edges using ext!
