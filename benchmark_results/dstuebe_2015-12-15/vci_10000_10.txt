@@ -1,0 +1,59 @@
+starting script
+Got store vertex in: 0.177 seconds
+Getting vertex by edge properties
+last ticket {"date"=>"2015-01-30", "ticket_id"=>"96797"}
+Total time: 0.89
+
+     total        self    children       calls  method
+----------------------------------------------------------------
+      0.89        0.00        0.89         116  Array#each
+      0.87        0.00        0.87          11  Enumerable.first
+      0.87        0.00        0.87          11  Pacer::Core::Route.each
+      0.86        0.00        0.86          22  Java::ComTinkerpopPipes::AbstractPipe#next
+      0.86        0.00        0.86          11  Pacer::Pipes::WrappingPipe#processNextStart
+      0.86        0.00        0.86          11  Java::ComTinkerpopPipesTransform::InVertexPipe#next
+      0.86        0.00        0.86          11  Pacer::Pipes::VertexQueryPipe#processNextStart
+      0.83        0.83        0.00          11  Java::ComThinkaureliusTitanGraphdbQueryVertex::VertexCentricQueryBuilder#edges
+      0.01        0.00        0.01          22  Pacer::RouteBuilder#chain
+      0.01        0.01        0.00          11  Java::ComThinkaureliusTitanGraphdbQuery::ResultSetIterator::1#iterator
+      0.01        0.00        0.01         122  Class#new
+      0.01        0.01        0.00          11  Java::ComThinkaureliusTitanGraphdbVertices::CacheVertex#query
+      0.01        0.00        0.01          11  Pacer::Core::Graph::EdgesRoute.in_v
+      0.01        0.00        0.01          11  Pacer::Core::Graph::VerticesRoute.vertex_query
+      0.01        0.00        0.01         627  Hash#[]
+      0.01        0.00        0.01          11  Pacer::Wrappers::ElementWrapper#chain_route
+      0.01        0.00        0.01          44  ConcreteJavaProxy.new
+      0.01        0.00        0.01          11  Pacer::Core::Graph::EdgesRoute.inV
+      0.01        0.00        0.01          11  Pacer::Core::Route.chain_route
+      0.01        0.00        0.01          22  Pacer::RouteBuilder#type_def
+      0.01        0.00        0.00         319  Kernel.send
+      0.01        0.00        0.00          11  Pacer::Core::Graph::ElementRoute.configure_iterator
+      0.00        0.00        0.00          11  Pacer::Pipes::WrappingPipe#initialize
+      0.00        0.00        0.00          11  Pacer::Wrappers::WrapperSelector.build
+      0.00        0.00        0.00          11  Pacer::Wrappers::VertexWrapper.wrapper_for
+      0.00        0.00        0.00          11  Pacer::Core::Route.iterator
+      0.00        0.00        0.00         132  Pacer::RouteBuilder#element_type
+      0.00        0.00        0.00          11  Java::ComThinkaureliusTitanGraphdbQuery::ResultSetIterator#next
+      0.00        0.00        0.00          11  BasicObject#instance_exec
+      0.00        0.00        0.00          11  Set#eql?
+      0.00        0.00        0.00         154  Pacer::RouteBuilder#graph
+      0.00        0.00        0.00          11  Hash#eql?
+      0.00        0.00        0.00         242  Pacer::RouteBuilder#source_value
+      0.00        0.00        0.00          22  Pacer::Core::Route.build_pipeline
+      0.00        0.00        0.00         231  Hash#fetch
+      0.00        0.00        0.00          84  Array#eql?
+      0.00        0.00        0.00          22  Pacer::RouteBuilder#type_modules
+      0.00        0.00        0.00          22  Pacer::RouteBuilder#configuration
+      0.00        0.00        0.00          22  Pacer::Core::Route.attach_pipe
+      0.00        0.00        0.00          22  Pacer::RouteBuilder#extension_modules
+      0.00        0.00        0.00          88  Pacer::RouteBuilder#type_from_source?
+      0.00        0.00        0.00          22  Pacer::Core::Route.pipe_source
+      0.00        0.00        0.00          22  Java::ComThinkaureliusTitanGraphdbQueryVertex::VertexCentricQueryBuilder#has
+      0.00        0.00        0.00          22  Pacer::RouteBuilder#all_extensions
+      0.00        0.00        0.00          11  Pacer::Route.property_filter
+      0.00        0.00        0.00          99  Pacer::Core::Route.graph
+      0.00        0.00        0.00          44  Pacer::RouteBuilder#wrapper
+      0.00        0.00        0.00          44  Pacer::RouteBuilder#extensions
+      0.00        0.00        0.00          44  ConcreteJavaProxy#initialize
+      0.00        0.00        0.00          22  Pacer::Core::Route.source_iterator
+Tada - Got 11 of 10000 edges using vci!

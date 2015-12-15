@@ -1,0 +1,8 @@
+metrics/
+data/
+.bundle
+vendor
+build/
+log/
+scratch
+Jarfile.lock
