@@ -5,8 +5,8 @@ import groovy.json.JsonBuilder
 // Something is broken in the gremlin.sh script with arg parsing...
 //data_size = (args.size() > 0) ? args[0].toInteger() : 100
 //sample_size = (args.size() > 1) ? args[1].toInteger() : 100
-data_size = 10000
-sample_size = 1000
+data_size = 100
+sample_size = 10
 
 
 conf = new BaseConfiguration()

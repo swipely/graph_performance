@@ -61,6 +61,8 @@ def pacer_edge_filter(sv, tuples)
     end
   end
   puts "last ticket #{ticket.properties}"
+  route = sv.out_e(:tickets, tuples[0]).in_v.pretty_inspect
+  puts "Route: #{route}"
   profile_data
 end
 
@@ -74,6 +76,8 @@ def pacer_vci(sv, tuples)
     end
   end
   puts "last ticket #{ticket.properties}"
+  route = sv.vertex_query('tickets', :out, element_type: :edge) { has('date', tuples[0][:date]).has('ticket_id', tuples[0][:ticket_id]) }.in_v.pretty_inspect
+  puts "Route: #{route}"
   profile_data
 end
 
@@ -87,6 +91,8 @@ def pacer_edge_filter_extensions(sv, tuples)
     end
   end
   puts "last ticket #{ticket.properties}"
+  route = sv_extended.tickets(tuples[0]).pretty_inspect
+  puts "Route: #{route}"
   profile_data
 end
 

@@ -3,12 +3,14 @@
 ## Test Suite
 ### Pacer Tests
 * Filter - the default pacer method for selecting an edge by property
+  *  #<outE(:tickets) -> E-Property(date=="2013-09-19", ticket_id=="58068") -> inV>
 * VCI - use the vertex query from pacer titan to do the same
+  * #<VertexQuery (tickets - out) -> inV>
 * EXT - use a pacer extension to wrap the Vertex and use the filter method
-
+  * #<outE(:tickets) -> E-Property(date=="2013-09-19", ticket_id=="58068") -> inV -> V>
 ### Gremlin Tests
 * VCI - use outE(:tickets).has(...) which implements a VCI query
-
+  * [GraphStep([v[4226]],vertex), VertexStep(OUT,[tickets],edge), HasStep([date.eq(2014-03-10)]), HasStep([ticket_id.eq(70331)]), EdgeVertexStep(IN)]
 ## Setup
 
 `$ bundle install --path vendor/support`

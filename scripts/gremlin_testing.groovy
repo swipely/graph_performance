@@ -2,7 +2,7 @@
 
 import groovy.json.JsonSlurper
 
-limit = 1000 - 1
+limit = 10 - 1
 
 conf = new BaseConfiguration()
 conf.setProperty("storage.backend", "com.amazon.titan.diskstorage.dynamodb.DynamoDBStoreManager")
@@ -32,6 +32,8 @@ for (it in tuples) {
   result = g.V(sv).outE('tickets').has('date',it['date']).has('ticket_id',it['ticket_id']).inV().next()
 }
 te = System.currentTimeMillis()
+
+println g.V(sv).outE('tickets').has('date',tuples[0]['date']).has('ticket_id',tuples[0]['ticket_id']).inV()
 
 data_size = g.V(sv).outE('tickets').count().next()
 
