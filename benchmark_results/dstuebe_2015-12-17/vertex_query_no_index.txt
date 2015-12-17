@@ -1,0 +1,62 @@
+starting script
+Got store vertex in: 0.178 seconds
+Getting vertex by edge properties
+last ticket {"date"=>"2015-12-04", "ticket_id"=>"40839"}
+#<V[8328]>
+Total: 1
+Route: #<VertexQuery (tickets - out) -> inV>
+Total time: 1.02
+
+     total        self    children       calls  method
+----------------------------------------------------------------
+      1.02        0.00        1.01        1006  Array#each
+      0.94        0.00        0.94         100  Enumerable.first
+      0.94        0.00        0.94         100  Pacer::Core::Route.each
+      0.90        0.00        0.90         200  Java::ComTinkerpopPipes::AbstractPipe#next
+      0.90        0.00        0.90         100  Pacer::Pipes::WrappingPipe#processNextStart
+      0.89        0.00        0.89         100  Java::ComTinkerpopPipesTransform::InVertexPipe#next
+      0.89        0.00        0.89         100  Pacer::Pipes::VertexQueryPipe#processNextStart
+      0.62        0.62        0.00         100  Java::ComThinkaureliusTitanGraphdbQuery::ResultSetIterator::1#iterator
+      0.24        0.24        0.00         100  Java::ComThinkaureliusTitanGraphdbQueryVertex::VertexCentricQueryBuilder#edges
+      0.05        0.00        0.05         200  Pacer::RouteBuilder#chain
+      0.04        0.00        0.04        1101  Class#new
+      0.04        0.00        0.03         100  Pacer::Core::Graph::VerticesRoute.vertex_query
+      0.03        0.00        0.03         100  Pacer::Core::Graph::EdgesRoute.in_v
+      0.03        0.00        0.03         100  Pacer::Wrappers::ElementWrapper#chain_route
+      0.03        0.00        0.03         400  ConcreteJavaProxy.new
+      0.02        0.00        0.02         100  Pacer::Core::Route.iterator
+      0.02        0.00        0.02        2900  Kernel.send
+      0.02        0.00        0.02         100  Pacer::Core::Graph::EdgesRoute.inV
+      0.02        0.00        0.02         200  Pacer::RouteBuilder#type_def
+      0.02        0.00        0.02         100  Pacer::Core::Route.chain_route
+      0.02        0.00        0.02         100  Pacer::Core::Graph::ElementRoute.configure_iterator
+      0.02        0.00        0.01        5700  Hash#[]
+      0.02        0.00        0.01         100  Pacer::Pipes::WrappingPipe#initialize
+      0.01        0.00        0.01         100  Pacer::Wrappers::WrapperSelector.build
+      0.01        0.00        0.01         200  Pacer::Core::Route.build_pipeline
+      0.01        0.00        0.01         100  Pacer::Wrappers::VertexWrapper.wrapper_for
+      0.01        0.00        0.01         200  Pacer::RouteBuilder#extension_modules
+      0.01        0.00        0.01         100  Pacer::Route.property_filter
+      0.01        0.00        0.01         200  Pacer::RouteBuilder#configuration
+      0.01        0.00        0.01        2100  Hash#fetch
+      0.01        0.00        0.01        1200  Pacer::RouteBuilder#element_type
+      0.01        0.00        0.01         200  Pacer::Core::Route.attach_pipe
+      0.01        0.01        0.00         100  Java::ComThinkaureliusTitanGraphdbVertices::CacheVertex#query
+      0.01        0.00        0.01         200  Pacer::RouteBuilder#all_extensions
+      0.01        0.00        0.01         200  Pacer::Core::Route.source_iterator
+      0.01        0.00        0.01         200  Pacer::Core::Route.pipe_source
+      0.01        0.01        0.00         100  BasicObject#instance_exec
+      0.01        0.00        0.01         800  Pacer::RouteBuilder#type_from_source?
+      0.01        0.00        0.01        1400  Pacer::RouteBuilder#graph
+      0.01        0.00        0.00        2200  Pacer::RouteBuilder#source_value
+      0.01        0.00        0.00         400  Pacer::RouteBuilder#extensions
+      0.01        0.00        0.01         400  Pacer::RouteBuilder#wrapper
+      0.01        0.00        0.01         100  Pacer::Route.edge_filters
+      0.01        0.00        0.01         400  Pacer::RouteBuilder#function_modules
+      0.01        0.00        0.00         100  Set#eql?
+      0.01        0.00        0.00         200  Pacer::Route#initialize
+      0.01        0.00        0.01         400  ConcreteJavaProxy#initialize
+      0.01        0.00        0.00         100  Pacer::Core::Route.iterator_from_source
+      0.01        0.00        0.00         100  Pacer::Filter::PropertyFilter::EdgeFilters#initialize
+      0.01        0.00        0.00         400  Pacer::FunctionResolver.function
+Tada - Got 100 of 10000 edges using vci!
