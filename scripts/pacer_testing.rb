@@ -11,10 +11,10 @@ fail "Error - First argument must be one of #{methods}, you specified '#{method_
 
 
 # read data for a few edges from disk
-tuples = File.open("scratch/script_data.json","r") { |f| JSON.parse(f.read, symbolize_names:true) }
+tuples = File.open("scratch/pacer_data.json","r") { |f| JSON.parse(f.read, symbolize_names:true) }
 
 # allow limit on the number of samples to fetch
-limit = ARGV[1].to_i
+limit = ARGV[1].to_i - 1
 fail if limit > tuples.size
 tuples = tuples[0..limit] if limit > 0 # ignore if not set or 0
 

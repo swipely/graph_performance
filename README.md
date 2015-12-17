@@ -1,5 +1,14 @@
 # graph_performance
 
+## Test Suite
+### Pacer Tests
+* Filter - the default pacer method for selecting an edge by property
+* VCI - use the vertex query from pacer titan to do the same
+* EXT - use a pacer extension to wrap the Vertex and use the filter method
+
+### Gremlin Tests
+* VCI - use outE(:tickets).has(...) which implements a VCI query
+
 ## Setup
 
 `$ bundle install --path vendor/support`
@@ -24,7 +33,7 @@ Making data
 Tada - inserted 100 tickets for a store and wrote 100 properties to disk
 ```
 
-## Running the filter test
+### Running the filter test
 Of the tickets in the grpah, profile getting 50 of the tickets using the saved sample properties.
 
 `$ be ruby --profile.api scripts/pacer_testing.rb filter 50`
@@ -93,7 +102,7 @@ Total time: 0.39
 Tada - Got 51 of 100 edges using filter!
 ```
 
-## Running the vci test
+### Running the vci test
 Of the tickets in the grpah, profile getting 50 of the tickets using the saved sample properties.
 `$ be ruby --profile.api scripts/pacer_testing.rb vci 50`
 
@@ -161,22 +170,39 @@ Total time: 3.83
 Tada - Got 51 of 100 edges using vci!
 ```
 
+### Running the ext test
+Of the tickets in the grpah, profile getting 50 of the tickets using the saved sample properties.
+`$ be ruby --profile.api scripts/pacer_testing.rb ext 50`
+
+
+### Running the Gremlin tests
+Follow the instructions in https://github.com/awslabs/dynamodb-titan-storage-backend
+
+`bin/gremlin.sh  scripts/test_data.groovy`
+
+`bin/gremlin.sh  scripts/gremlin_testing.groovy`
+
+Currently, I can't get command line args to work with the script executor... so just modify the script for the values you want...
+
 ## Benchmark Results
+Test results for gremlin and pacer
+
 ### Results
-Times are from the profiled code block, best of 3 executions
+Times are from the profiled code block, best of 3 manual executions
 Using Titan Dynamo backend with '--inmemeory'
-#### VCI
-| Ticket  | Samples | VCI    (s)| Filter (s) | Ext    (s) |
-| ------: | ------: | ---------:| ----------:| ----------:|
-| 100     | 10      | 0.81      | 0.23       | 0.24       |
-| 1000    | 10      | 0.74      | 0.33       | 0.33       |
-| 10000   | 10      | 0.87      | 0.46       | 0.43       |
-| 100000  | 10      | 0.84      | 0.97       | N/A        |
-| 10000   | 1       | 0.25      | 0.36       | 0.36       |
-| 10000   | 50      | 3.55      | 0.54       | 0.60       |
-| 10000   | 100     | 6.62      | 1.01       | 0.95       |
-| 10000   | 1000    | 63.7      | 6.06       | 6.46       |
-Did not test the ext method with the largest graph.
+
+#### Getting tickets by date and id:
+| Tickets | Samples | VCI    (s)| Filter (s) | Ext    (s) | Gremlin(s) |
+| ------: | ------: | ---------:| ----------:| ----------:| ----------:|
+| 100     | 10      | 0.81      | 0.23       | 0.24       | 1.184      |
+| 1000    | 10      | 0.74      | 0.33       | 0.33       | 1.072      |
+| 10000   | 10      | 0.87      | 0.46       | 0.43       | 1.101      |
+| 100000  | 10      | 0.84      | 0.97       | N/A        | N/A        |
+| 10000   | 1       | 0.25      | 0.36       | 0.36       | 0.446      |
+| 10000   | 50      | 3.55      | 0.54       | 0.60       | 3.61       |
+| 10000   | 100     | 6.62      | 1.01       | 0.95       | 7.155      |
+| 10000   | 1000    | 63.7      | 6.06       | 6.46       | 66.035     |
+Did not test the ext method or gremlin with the largest graph.
 
 ### Environment
 #### System
@@ -217,5 +243,18 @@ See config directory for options used
 Run with:
 `$ dynamodb-local --inMemory -port 9389`
 
-### Bundled Gems and Jars
+#### Bundled Gems and Jars
+com.amazonaws:dynamodb-titan054-storage-backend:1.0.0
+com.thinkaurelius.titan:titan-core:jar:0.5.4
+com.thinkaurelius.titan:titan-es:jar:0.5.4
+com.tinkerpop.blueprints:blueprints-core:jar:2.6.0
+
+pacer (2.0.24-java)
+pacer-titan (0.0.7-java)
+
 See Jarfile.lock and Gemfile.lock for more details...
+
+
+#### Gremlin Testing with Titan 1.0.0
+gremlin 3.0.1-incubating
+https://github.com/awslabs/dynamodb-titan-storage-backend/tree/d1a59624dcef796b835e7ffb41f0a3f007008d63

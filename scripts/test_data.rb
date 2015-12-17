@@ -68,7 +68,7 @@ g.transaction do
   end
 end
 
-File.open("scratch/script_data.json","w") do |f|
+File.open("scratch/pacer_data.json","w") do |f|
   f.write(tuples.to_json)
 end
 
