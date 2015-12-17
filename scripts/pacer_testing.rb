@@ -10,13 +10,24 @@ method_name = ARGV[0]
 fail "Error - First argument must be one of #{methods}, you specified '#{method_name}'" unless methods.include? method_name
 
 
-# read data for a few edges from disk
-tuples = File.open("scratch/pacer_data.json","r") { |f| JSON.parse(f.read, symbolize_names:true) }
-
 # allow limit on the number of samples to fetch
 limit = ARGV[1].to_i - 1
-fail if limit > tuples.size
-tuples = tuples[0..limit] if limit > 0 # ignore if not set or 0
+
+# read data for a few edges from disk
+# tuples = File.open("scratch/pacer_data.json","r") { |f| JSON.parse(f.read, symbolize_names:true) }
+
+
+prng = Random.new(1234)
+d = Date.new(2015,12,14)
+tuples = Array.new(limit+1) do
+  {
+    date: (d + prng.rand(1..1000)).to_s,
+    ticket_id: (prng.rand(1..100000)).to_s
+   }
+end
+
+#fail if limit > tuples.size
+#tuples = tuples[0..limit] if limit > 0 # ignore if not set or 0
 
 # open the graph
 g = Pacer.titan('config/dynamo_local.properties')
@@ -57,10 +68,10 @@ def pacer_edge_filter(sv, tuples)
   profile_data = JRuby::Profiler.profile do
     tuples.each do |props|
       ticket = sv.out_e(:tickets, props).in_v.first
-      fail 'No ticket found' if ticket.nil?
+      fail 'No ticket found' unless ticket.nil?
     end
   end
-  puts "last ticket #{ticket.properties}"
+  #puts "last ticket #{ticket.properties}"
   profile_data
 end
 
@@ -70,10 +81,10 @@ def pacer_vci(sv, tuples)
   profile_data = JRuby::Profiler.profile do
     tuples.each do |props|
       ticket = sv.vertex_query('tickets', :out, element_type: :edge) { has('date', props[:date]).has('ticket_id', props[:ticket_id]) }.in_v.first
-      fail 'No ticket found' if ticket.nil?
+      fail 'No ticket found' unless ticket.nil?
     end
   end
-  puts "last ticket #{ticket.properties}"
+  #puts "last ticket #{ticket.properties}"
   profile_data
 end
 
@@ -83,10 +94,10 @@ def pacer_edge_filter_extensions(sv, tuples)
   profile_data = JRuby::Profiler.profile do
     tuples.each do |props|
       ticket = sv_extended.tickets(props).first
-      fail 'No ticket found' if ticket.nil?
+      fail 'No ticket found' unless ticket.nil?
     end
   end
-  puts "last ticket #{ticket.properties}"
+  #puts "last ticket #{ticket.properties}"
   profile_data
 end
 
