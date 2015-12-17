@@ -213,19 +213,19 @@ Doing an existence check for properties that are not present is slightly slower 
 
 #### Testing 10,000/100 with different config and indexing
 
-* Gremlin / Titan 1.0.0
+##### Gremlin / Titan 1.0.0
 |                | partition on | partition off |
 | -------------: | -----------: | ------------: |
 | edge index on  | 7.155        | 1.025         |
 | edge index off | 1.395        | 1.248         |
 
-* Pacer VCI
+##### Pacer VCI
 |                | partition on | partition off |
 | -------------: | -----------: | ------------: |
 | edge index on  | 6.62         | 0.78          |
 | edge index off | 1.02         | 0.97          |
 
-* Pacer Filter
+##### Pacer Filter
 |                | partition on | partition off |
 | -------------: | -----------: | ------------: |
 | edge index on  | 1.01         | 0.95          |
