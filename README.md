@@ -206,8 +206,30 @@ Using Titan Dynamo backend with '--inmemeory'
 | 10000   | 1000    | 63.7      | 6.06       | 6.46       | 66.035     |
 Did not test the ext method or gremlin with the largest graph.
 
+These tests were run with paritioned store vertex and edge indexing on.
+
 The test results above are all for getting the vertex by edge properties that are known to exist.
 Doing an existence check for properties that are not present is slightly slower for filter, almost the same for VCI methods. This is relevant for upsert operations.
+
+#### Testing 10,000/100 with different config and indexing
+
+* Gremlin / Titan 1.0.0
+|                | partition on | partition off |
+| -------------: | -----------: | ------------: |
+| edge index on  | 7.155        | 1.025         |
+| edge index off | 1.395        | 1.248         |
+
+* Pacer VCI
+|                | partition on | partition off |
+| -------------: | -----------: | ------------: |
+| edge index on  | 6.62         | 0.78          |
+| edge index off | 1.02         | 0.97          |
+
+* Pacer Filter
+|                | partition on | partition off |
+| -------------: | -----------: | ------------: |
+| edge index on  | 1.01         | 0.95          |
+| edge index off | 1.49         | 1.01          |
 
 ### Environment
 #### System
