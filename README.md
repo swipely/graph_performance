@@ -204,6 +204,9 @@ Using Titan Dynamo backend with '--inmemeory'
 | 10000   | 1000    | 63.7      | 6.06       | 6.46       | 66.035     |
 Did not test the ext method or gremlin with the largest graph.
 
+The test results above are all for getting the vertex by edge properties that are known to exist.
+Doing an existence check for properties that are not present is slightly slower for filter, almost the same for VCI methods. This is relevant for upsert operations.
+
 ### Environment
 #### System
 ```
