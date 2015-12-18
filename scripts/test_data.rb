@@ -20,7 +20,7 @@ data_size = 100 if data_size == 0
 sample_size = ARGV[1].to_i
 sample_size = 100 if sample_size == 0
 
-g = Pacer.titan('config/dynamo_local.properties')
+g = Pacer.titan('config/dynamo_testing.properties')
 
 mgmt = g.blueprints_graph.get_management_system
 

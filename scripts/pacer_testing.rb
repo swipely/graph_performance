@@ -19,7 +19,7 @@ fail if limit > tuples.size
 tuples = tuples[0..limit] if limit > -1 # ignore if not set or 0
 
 # open the graph
-g = Pacer.titan('config/dynamo_local.properties')
+g = Pacer.titan('config/dynamo_testing.properties')
 
 # get the store vertex
 t1 = Time.now

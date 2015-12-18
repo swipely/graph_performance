@@ -10,18 +10,69 @@ sample_size = 1000
 
 
 conf = new BaseConfiguration()
-conf.setProperty("storage.backend", "com.amazon.titan.diskstorage.dynamodb.DynamoDBStoreManager")
-conf.setProperty("storage.dynamodb.client.endpoint", "http://localhost:9389")
+conf.setProperty("storage.dynamodb.prefix", "t_crm_titan")
 conf.setProperty("schema.default", "none")
+
+conf.setProperty("storage.dynamodb.force-consistent-read","false")
+conf.setProperty("storage.dynamodb.max-self-throttled-retries","60")
+conf.setProperty("storage.dynamodb.control-plane-rate","10")
+
+
+conf.setProperty("storage.dynamodb.stores.edgestore.capacity-read","4000")
+conf.setProperty("storage.dynamodb.stores.graphindex.capacity-read","4000")
+conf.setProperty("storage.dynamodb.stores.titan_ids.capacity-read","20")
+conf.setProperty("storage.dynamodb.stores.system_properties.capacity-read","20")
+conf.setProperty("storage.dynamodb.stores.systemlog.capacity-read","20")
+conf.setProperty("storage.dynamodb.stores.txlog.capacity-read","20")
+
+
+conf.setProperty("storage.dynamodb.stores.edgestore.capacity-write","20000")
+conf.setProperty("storage.dynamodb.stores.graphindex.capacity-write","4000")
+conf.setProperty("storage.dynamodb.stores.titan_ids.capacity-write","20")
+conf.setProperty("storage.dynamodb.stores.system_properties.capacity-write","20")
+conf.setProperty("storage.dynamodb.stores.systemlog.capacity-write","20")
+conf.setProperty("storage.dynamodb.stores.txlog.capacity-write","20")
+
+
+conf.setProperty("storage.dynamodb.stores.edgestore.read-rate","4000")
+conf.setProperty("storage.dynamodb.stores.graphindex.read-rate","4000")
+conf.setProperty("storage.dynamodb.stores.titan_ids.read-rate","20")
+conf.setProperty("storage.dynamodb.stores.system_properties.read-rate","20")
+conf.setProperty("storage.dynamodb.stores.systemlog.read-rate","20")
+conf.setProperty("storage.dynamodb.stores.txlog.read-rate","20")
+
+conf.setProperty("storage.dynamodb.stores.edgestore.write-rate","20000")
+conf.setProperty("storage.dynamodb.stores.graphindex.write-rate","4000")
+conf.setProperty("storage.dynamodb.stores.titan_ids.write-rate","20")
+conf.setProperty("storage.dynamodb.stores.system_properties.write-rate","20")
+conf.setProperty("storage.dynamodb.stores.systemlog.write-rate","20")
+conf.setProperty("storage.dynamodb.stores.txlog.write-rate","20")
+
+conf.setProperty("storage.dynamodb.stores.edgestore.data-model","MULTI")
+conf.setProperty("storage.dynamodb.stores.graphindex.data-model","MULTI")
+conf.setProperty("storage.dynamodb.stores.titan_ids.data-model","MULTI")
+conf.setProperty("storage.dynamodb.stores.system_properties.data-model","MULTI")
+conf.setProperty("storage.dynamodb.stores.systemlog.data-model","MULTI")
+conf.setProperty("storage.dynamodb.stores.txlog.data-model","MULTI")
+
+conf.setProperty("storage.dynamodb.client.connection-max","250")
+conf.setProperty("storage.dynamodb.client.retry-error-max","0")
+conf.setProperty("storage.dynamodb.client.executor.max-pool-size","250")
+conf.setProperty("storage.dynamodb.client.executor.max-queue-length","65400")
+
+conf.setProperty("storage.backend", "com.amazon.titan.diskstorage.dynamodb.DynamoDBStoreManager")
+conf.setProperty("storage.dynamodb.client.credentials.class-name","com.amazonaws.auth.DefaultAWSCredentialsProviderChain")
+conf.setProperty("storage.dynamodb.client.credentials.constructor-args","")
+conf.setProperty("storage.dynamodb.client.endpoint","https://dynamodb.us-east-1.amazonaws.com")
+conf.setProperty("storage.buffer-size","65400")
+
+conf.setProperty("storage.setup-wait","300000")
+conf.setProperty("ids.block-size","100000")
+conf.setProperty("storage.write-time","1 ms")
+conf.setProperty("storage.read-time","1 ms")
 //conf.setProperty("cluster.partition", "true")
 //conf.setProperty("cluster.max-partitions", "32")
 conf.setProperty("ids.flush", "false")
-conf.setProperty("storage.dynamodb.stores.edgestore.write-rate","20000")
-conf.setProperty("storage.dynamodb.stores.graphindex.write-rate","20000")
-conf.setProperty("storage.dynamodb.stores.edgestore.read-rate","20000")
-conf.setProperty("storage.dynamodb.stores.graphindex.read-rate","20000")
-
-
 g = TitanFactory.open(conf)
 
 mgmt = g.openManagement()
