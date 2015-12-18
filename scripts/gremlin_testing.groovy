@@ -2,10 +2,10 @@
 
 import groovy.json.JsonSlurper
 
-limit = 100 - 1
+limit = 1000 - 1
 
 conf = new BaseConfiguration()
-conf.setProperty("storage.dynamodb.prefix", "t_crm_titan")
+conf.setProperty("storage.dynamodb.prefix", "t2_crm_titan")
 conf.setProperty("schema.default", "none")
 
 conf.setProperty("storage.dynamodb.force-consistent-read","false")
@@ -65,8 +65,8 @@ conf.setProperty("storage.setup-wait","300000")
 conf.setProperty("ids.block-size","100000")
 conf.setProperty("storage.write-time","1 ms")
 conf.setProperty("storage.read-time","1 ms")
-//conf.setProperty("cluster.partition", "true")
-//conf.setProperty("cluster.max-partitions", "32")
+conf.setProperty("cluster.partition", "true")
+conf.setProperty("cluster.max-partitions", "2")
 conf.setProperty("ids.flush", "false")
 
 

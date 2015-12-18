@@ -5,12 +5,12 @@ import groovy.json.JsonBuilder
 // Something is broken in the gremlin.sh script with arg parsing...
 //data_size = (args.size() > 0) ? args[0].toInteger() : 100
 //sample_size = (args.size() > 1) ? args[1].toInteger() : 100
-data_size = 10000
+data_size = 100000
 sample_size = 1000
 
 
 conf = new BaseConfiguration()
-conf.setProperty("storage.dynamodb.prefix", "t_crm_titan")
+conf.setProperty("storage.dynamodb.prefix", "t2_crm_titan")
 conf.setProperty("schema.default", "none")
 
 conf.setProperty("storage.dynamodb.force-consistent-read","false")
@@ -70,8 +70,8 @@ conf.setProperty("storage.setup-wait","300000")
 conf.setProperty("ids.block-size","100000")
 conf.setProperty("storage.write-time","1 ms")
 conf.setProperty("storage.read-time","1 ms")
-//conf.setProperty("cluster.partition", "true")
-//conf.setProperty("cluster.max-partitions", "32")
+conf.setProperty("cluster.partition", "true")
+conf.setProperty("cluster.max-partitions", "2")
 conf.setProperty("ids.flush", "false")
 g = TitanFactory.open(conf)
 
