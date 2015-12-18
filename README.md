@@ -189,7 +189,7 @@ Currently, I can't get command line args to work with the script executor... so 
 ## Benchmark Results
 Test results for gremlin and pacer
 
-### Results
+### Local Test Results
 Times are from the profiled code block, best of 3 manual executions
 Using Titan Dynamo backend with '--inmemeory'
 
@@ -230,6 +230,56 @@ Doing an existence check for properties that are not present is slightly slower 
 | -------------: | -----------: | ------------: |
 | edge index on  | 1.01         | 0.95          |
 | edge index off | 1.49         | 1.01          |
+
+
+### AWS Test Results
+Times are from the profiled code block, best of 3 manual executions
+Using Titan Dynamo backed by AWS - config/dynamo_testing.properties except as noted
+
+#### Getting tickets by date and id:
+| Tickets | Samples | VCI    (s)| Filter (s) | Ext    (s) | Gremlin(s) |
+| ------: | ------: | ---------:| ----------:| ----------:| ----------:|
+| 100     | 10      | 0.81      | 0.23       | 0.24       | 1.184      |
+
+#### Testing 100,000 tickets with different partition size
+
+##### Time to Insert
+|         | partition 0  | partition 2   | partition 4   | partition 8   | partition 16  |
+| ------: | -----------: | ------------: | ------------: | ------------: | ------------: |
+| Pacer   | 464.777      | 0000          | 483.524       | 0000          | 0000          |
+| Gremlin | 0000         | 0000          | 0000          | 0000          | 0000          |
+
+
+##### Partitions and VCIs
+| Filter  | partition 0  | partition 2   | partition 4   | partition 8   | partition 16  |
+| ------: | -----------: | ------------: | ------------: | ------------: | ------------: |
+| 1       | 2.532        | 0000          | 2.235         | 0000          | 0000          |
+| 10      | 3.151        | 0000          | 13.258        | 0000          | 0000          |
+| 100     | 3.792        | 0000          | 123.222       | 0000          | 0000          |
+| 1000    | 160.327      | 0000          | NA            | 0000          | 0000          |
+
+| VCI     | partition 0  | partition 2   | partition 4   | partition 8   | partition 16  |
+| ------: | -----------: | ------------: | ------------: | ------------: | ------------: |
+| 1       | 0.152        | 0000          | 0.185         | 0000          | 0000          |
+| 10      | 0.451        | 0000          | 0.288         | 0000          | 0000          |
+| 100     | 1.976        | 0000          | 2.334         | 0000          | 0000          |
+| 1000    | 11.117       | 0000          | 12.292        | 0000          | 0000          |
+
+| Ext     | partition 0  | partition 2   | partition 4   | partition 8   | partition 16  |
+| ------: | -----------: | ------------: | ------------: | ------------: | ------------: |
+| 1       | 0000         | 0000          | 0000          | 0000          | 0000          |
+| 10      | 0000         | 0000          | 0000          | 0000          | 0000          |
+| 100     | 0000         | 0000          | 0000          | 0000          | 0000          |
+| 1000    | 0000         | 0000          | 0000          | 0000          | 0000          |
+
+| Gremlin | partition 0  | partition 2   | partition 4   | partition 8   | partition 16  |
+| ------: | -----------: | ------------: | ------------: | ------------: | ------------: |
+| 1       | 0000         | 0000          | 0000          | 0000          | 0000          |
+| 10      | 0000         | 0000          | 0000          | 0000          | 0000          |
+| 100     | 0000         | 0000          | 0000          | 0000          | 0000          |
+| 1000    | 0000         | 0000          | 0000          | 0000          | 0000          |
+
+
 
 ### Environment
 #### System
