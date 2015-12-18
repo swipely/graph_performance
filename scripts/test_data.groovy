@@ -5,16 +5,16 @@ import groovy.json.JsonBuilder
 // Something is broken in the gremlin.sh script with arg parsing...
 //data_size = (args.size() > 0) ? args[0].toInteger() : 100
 //sample_size = (args.size() > 1) ? args[1].toInteger() : 100
-data_size = 100
-sample_size = 10
+data_size = 10000
+sample_size = 1000
 
 
 conf = new BaseConfiguration()
 conf.setProperty("storage.backend", "com.amazon.titan.diskstorage.dynamodb.DynamoDBStoreManager")
 conf.setProperty("storage.dynamodb.client.endpoint", "http://localhost:9389")
 conf.setProperty("schema.default", "none")
-conf.setProperty("cluster.partition", "true")
-conf.setProperty("cluster.max-partitions", "32")
+//conf.setProperty("cluster.partition", "true")
+//conf.setProperty("cluster.max-partitions", "32")
 conf.setProperty("ids.flush", "false")
 conf.setProperty("storage.dynamodb.stores.edgestore.write-rate","20000")
 conf.setProperty("storage.dynamodb.stores.graphindex.write-rate","20000")
@@ -32,7 +32,8 @@ ticketIdKey = mgmt.makePropertyKey("ticket_id").dataType(String.class).make()
 
 ticketsEdge = mgmt.makeEdgeLabel("tickets").multiplicity(Multiplicity.ONE2MANY).make()
 
-store = mgmt.makeVertexLabel("store").partition().make()
+//store = mgmt.makeVertexLabel("store").partition().make()
+store = mgmt.makeVertexLabel("store").make()
 ticket = mgmt.makeVertexLabel("ticket").make()
 
 mgmt.buildIndex("byStorePrettyUrl", Vertex.class).addKey(storePrettyUrlKey).unique().buildCompositeIndex()

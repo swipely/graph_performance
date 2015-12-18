@@ -31,7 +31,8 @@ ticketIdKey = mgmt.makePropertyKey("ticket_id").dataType(java.lang.String.java_c
 
 ticketsEdge = mgmt.makeEdgeLabel("tickets").multiplicity(Multiplicity::ONE2MANY).make()          # store tickets Ticket, etc
 
-store = mgmt.makeVertexLabel("store").partition.make()
+#store = mgmt.makeVertexLabel("store").partition.make()
+store = mgmt.makeVertexLabel("store").make()
 ticket = mgmt.makeVertexLabel("ticket").make()
 
 mgmt.buildIndex("byStorePrettyUrl", Vertex.java_class).addKey(storePrettyUrlKey).unique().buildCompositeIndex()
