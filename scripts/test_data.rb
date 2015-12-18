@@ -2,6 +2,7 @@ puts 'starting script'
 require 'json'
 require 'pacer-titan'
 require 'java'
+require 'benchmark'
 java_import 'com.thinkaurelius.titan.core.Multiplicity'
 java_import 'com.tinkerpop.blueprints.Direction'
 java_import 'com.thinkaurelius.titan.core.Order'
@@ -47,25 +48,29 @@ prng = Random.new(1234)
 d = Date.new(2015,12,14)
 
 tuples = []
-g.transaction do
+elapsed = Benchmark.realtime do
+  g.transaction do
 
-  store_vertex = g.create_vertex(label: 'store', store_pretty_url: "b_store")
+    store_vertex = g.create_vertex(label: 'store', store_pretty_url: "b_store")
 
-  data_size.times do |i|
+    data_size.times do |i|
 
-    props = {
-      date: (d - prng.rand(1..1000)).to_s,
-      ticket_id: (prng.rand(1..100000)).to_s
-     }
+      props = {
+        date: (d - prng.rand(1..1000)).to_s,
+        ticket_id: (prng.rand(1..100000)).to_s
+       }
 
-    ticket_vertex = g.create_vertex(props.merge(label: 'ticket'))
+      ticket_vertex = g.create_vertex(props.merge(label: 'ticket'))
 
 
-    tuples << props if i % [1, data_size/sample_size].max == 0
-    store_vertex.add_edges_to(:tickets, ticket_vertex, props)
+      tuples << props if i % [1, data_size/sample_size].max == 0
+      store_vertex.add_edges_to(:tickets, ticket_vertex, props)
 
-    g.commit_implicit_transaction if i % 1000 == 0
-
+      if i % 10000 == 0
+        g.commit_implicit_transaction
+        puts "Commited ticket #{i}"
+      end
+    end
   end
 end
 
@@ -73,5 +78,5 @@ File.open("scratch/pacer_data.json","w") do |f|
   f.write(tuples.to_json)
 end
 
-puts "Tada - inserted #{data_size} tickets for a store and wrote #{tuples.size} properties to disk"
+puts "Tada - inserted #{data_size} tickets for a store in #{elapsed} seconds and wrote #{tuples.size} properties to disk"
 exit!
