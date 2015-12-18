@@ -2,7 +2,7 @@
 
 import groovy.json.JsonSlurper
 
-limit = 100 - 1
+limit = 1000 - 1
 
 conf = new BaseConfiguration()
 conf.setProperty("storage.dynamodb.prefix", "t_crm_titan")
