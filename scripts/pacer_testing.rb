@@ -3,7 +3,8 @@ require 'active_support/core_ext/object/try'
 require 'pacer-titan'
 require 'json'
 require 'java'
-require 'jruby/profiler'
+require 'benchmark'
+#require 'jruby/profiler'
 
 methods = %w(filter vci ext)
 method_name = ARGV[0]
@@ -54,7 +55,8 @@ puts 'Getting vertex by edge properties'
 
 def pacer_edge_filter(sv, tuples)
   ticket = nil
-  profile_data = JRuby::Profiler.profile do
+  profile_data = Benchmark.realtime do
+  # profile_data = JRuby::Profiler.profile do
     tuples.each do |props|
       ticket = sv.out_e(:tickets, props).in_v.first
       fail 'No ticket found' if ticket.nil?
@@ -69,7 +71,8 @@ end
 
 def pacer_vci(sv, tuples)
   ticket = nil
-  profile_data = JRuby::Profiler.profile do
+  profile_data = Benchmark.realtime do
+  # profile_data = JRuby::Profiler.profile do
     tuples.each do |props|
       ticket = sv.vertex_query('tickets', :out, element_type: :edge) { has('date', props[:date]).has('ticket_id', props[:ticket_id]) }.in_v.first
       fail 'No ticket found' if ticket.nil?
@@ -84,7 +87,8 @@ end
 def pacer_edge_filter_extensions(sv, tuples)
   sv_extended = sv.graph.vertex(sv[:id], Extensions::Store)
   ticket = nil
-  profile_data = JRuby::Profiler.profile do
+  profile_data = Benchmark.realtime do
+  # profile_data = JRuby::Profiler.profile do
     tuples.each do |props|
       ticket = sv_extended.tickets(props).first
       fail 'No ticket found' if ticket.nil?
@@ -98,16 +102,16 @@ end
 
 profile_data = case method_name
 when 'vci'
-  profile_data = pacer_vci(store_vertex, tuples)
+  pacer_vci(store_vertex, tuples)
 when 'filter'
-  profile_data = pacer_edge_filter(store_vertex, tuples)
+  pacer_edge_filter(store_vertex, tuples)
 when 'ext'
-  profile_data = pacer_edge_filter_extensions(store_vertex, tuples)
+  pacer_edge_filter_extensions(store_vertex, tuples)
 end
 
-profile_printer = JRuby::Profiler::FlatProfilePrinter.new(profile_data)
-profile_printer.printProfile(STDOUT)
-
+#profile_printer = JRuby::Profiler::FlatProfilePrinter.new(profile_data)
+#profile_printer.printProfile(STDOUT)
+puts "Execution time: #{profile_data}"
 
 data_size = store_vertex.out_e(:tickets).count
 
