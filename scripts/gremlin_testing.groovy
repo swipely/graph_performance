@@ -2,14 +2,14 @@
 
 import groovy.json.JsonSlurper
 
-limit = 10 - 1
+limit = 100 - 1
 
 conf = new BaseConfiguration()
 conf.setProperty("storage.backend", "com.amazon.titan.diskstorage.dynamodb.DynamoDBStoreManager")
 conf.setProperty("storage.dynamodb.client.endpoint", "http://localhost:9389")
 conf.setProperty("schema.default", "none")
-conf.setProperty("cluster.partition", "true")
-conf.setProperty("cluster.max-partitions", "32")
+//conf.setProperty("cluster.partition", "true")
+//conf.setProperty("cluster.max-partitions", "32")
 conf.setProperty("ids.flush", "false")
 conf.setProperty("storage.dynamodb.stores.edgestore.write-rate","20000")
 conf.setProperty("storage.dynamodb.stores.graphindex.write-rate","20000")

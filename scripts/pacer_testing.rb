@@ -16,7 +16,7 @@ tuples = File.open("scratch/pacer_data.json","r") { |f| JSON.parse(f.read, symbo
 # allow limit on the number of samples to fetch
 limit = ARGV[1].to_i - 1
 fail if limit > tuples.size
-tuples = tuples[0..limit] if limit > 0 # ignore if not set or 0
+tuples = tuples[0..limit] if limit > -1 # ignore if not set or 0
 
 # open the graph
 g = Pacer.titan('config/dynamo_local.properties')
