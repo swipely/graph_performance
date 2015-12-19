@@ -32,8 +32,8 @@ ticketIdKey = mgmt.makePropertyKey("ticket_id").dataType(java.lang.String.java_c
 
 ticketsEdge = mgmt.makeEdgeLabel("tickets").multiplicity(Multiplicity::ONE2MANY).make()          # store tickets Ticket, etc
 
-store = mgmt.makeVertexLabel("store").partition.make()
-#store = mgmt.makeVertexLabel("store").make()
+#store = mgmt.makeVertexLabel("store").partition.make()
+store = mgmt.makeVertexLabel("store").make()
 ticket = mgmt.makeVertexLabel("ticket").make()
 
 mgmt.buildIndex("byStorePrettyUrl", Vertex.java_class).addKey(storePrettyUrlKey).unique().buildCompositeIndex()
@@ -65,6 +65,8 @@ elapsed = Benchmark.realtime do
 
       tuples << props if i % [1, data_size/sample_size].max == 0
       store_vertex.add_edges_to(:tickets, ticket_vertex, props)
+
+      store_vertex = ticket_vertex
 
       if i % 10000 == 0
         g.commit_implicit_transaction
