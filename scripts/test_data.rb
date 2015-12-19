@@ -37,7 +37,7 @@ store = mgmt.makeVertexLabel("store").make()
 ticket = mgmt.makeVertexLabel("ticket").make()
 
 mgmt.buildIndex("byStorePrettyUrl", Vertex.java_class).addKey(storePrettyUrlKey).unique().buildCompositeIndex()
-mgmt.buildEdgeIndex(ticketsEdge,'byDateAndTicketId',Direction::OUT,Order::DESC,dateKey,ticketIdKey);
+#mgmt.buildEdgeIndex(ticketsEdge,'byDateAndTicketId',Direction::OUT,Order::DESC,dateKey,ticketIdKey);
 
 mgmt.commit()
 
@@ -51,7 +51,7 @@ tuples = []
 elapsed = Benchmark.realtime do
   g.transaction do
 
-    store_vertex = g.create_vertex(label: 'store', store_pretty_url: "b_store")
+    store_vertex = g.create_vertex(label: 'store', store_pretty_url: "c_store")
 
     data_size.times do |i|
 
