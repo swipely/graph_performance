@@ -6,7 +6,7 @@ import groovy.json.JsonBuilder
 //data_size = (args.size() > 0) ? args[0].toInteger() : 100
 //sample_size = (args.size() > 1) ? args[1].toInteger() : 100
 data_size = 100000
-edge_size = 1000000
+edge_size = 10
 
 
 conf = new BaseConfiguration()
@@ -98,6 +98,10 @@ ticket = mgmt.makeVertexLabel("ticket").make()
 
 mgmt.commit()
 
+println "Finished setting schema - sleeping 30 seconds"
+
+sleep(30000)
+
 println "Making data"
 
 tickets = []
@@ -112,23 +116,25 @@ te = System.currentTimeMillis()
 println "committing vertices"
 g.tx().commit()
 tf = System.currentTimeMillis()
-println "Made vertices in ${te - ts} ms and committed in ${tf - te} ms"
+println "Made vertices in ${(te - ts)/1000.0} s and committed in ${(tf - te)/1000.0} s"
 
 ts = System.currentTimeMillis()
 data_size.times {
-  t1_i = rand.nextInt(data_size)
-  t2_i = (t1_i + 1 + rand.nextInt(data_size - 1) ) % data_size
-
+  t1_i = it
   t1 = tickets[t1_i]
-  t2 = tickets[t2_i]
 
-  t1.addEdge('tickets', t2)
+  edge_size.times {
+    t2_i = (t1_i + 1 + rand.nextInt(data_size - 1) ) % data_size
+    t2 = tickets[t2_i]
+
+    t1.addEdge('tickets', t2)
+  }
 }
 te = System.currentTimeMillis()
 println "committing edges"
 g.tx().commit()
 tf = System.currentTimeMillis()
-println "Made edges in ${(te - ts)/1000.0} s and committed in ${(tf - te)/1000.0} ms"
+println "Made edges in ${(te - ts)/1000.0} s and committed in ${(tf - te)/1000.0} s"
 
 
 // new File('scratch/gremlin_data.json').write(new JsonBuilder(tuples).toPrettyString())
