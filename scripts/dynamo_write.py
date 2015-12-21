@@ -14,7 +14,7 @@ class MyTask(threading.Thread):
   def run(self):
     print '%s: Starting... setup table: %s' % (self.threadID, TABLE_NAME)
 
-    time.sleep(self.threadID)
+    time.sleep(float(self.threadID))
 
     dynamodb = boto3.resource('dynamodb')
 
