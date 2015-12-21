@@ -1,5 +1,5 @@
 import boto3
-TABLE_NAME = "t_mock_edge_store"
+TABLE_NAME = "t_console_edge_store"
 print 'Starting... setup table: %s' % TABLE_NAME
 dynamodb = boto3.resource('dynamodb')
 
@@ -41,9 +41,7 @@ print 'Waiting for active status'
 table.meta.client.get_waiter('table_exists').wait(TableName=TABLE_NAME)
 
 # Print out some data about the table.
-print "Item count %d... sleeping 10" % table.item_count
-
-sleep(10)
+print "Item count %d" % table.item_count
 
 
 print 'Putting items!'
