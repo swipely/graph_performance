@@ -69,7 +69,7 @@ class MyTask(threading.Thread):
             )
           if icnt % 1000 == 0:
             tt = time.time()
-            print "%s: Batch put %d items!, avg_rate %f, curr_rate %f" % (self.threadID, icnt, icnt/(tt - t0), icnt/(tt - tn))
+            print "%s: Batch put %d items!, avg_rate %f, curr_rate %f" % (self.threadID, icnt, icnt/(tt - t0), 1000/(tt - tn))
             tn = tt
           icnt +=1
 
