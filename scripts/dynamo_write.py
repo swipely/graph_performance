@@ -1,5 +1,6 @@
 import boto3
 import threading
+import time
 
 TABLE_NAME = "t_console_edge_store"
 
@@ -57,14 +58,19 @@ class MyTask(threading.Thread):
 
     print "%s: Putting items!" % self.threadID
     icnt = 1
+
     with open("/dev/urandom","rb") as f:
       with table.batch_writer() as batch:
+        t0 = tn = time.time()
         while True:
           batch.put_item(
             Item={'hk':bytearray(f.read(12)),'rk':bytearray(f.read(18)),'v':bytearray(f.read(10000))}
             # Item={'hk':HK,'rk':bytearray(f.read(18)),'v':bytearray(f.read(300))}
             )
-          if icnt % 1000 == 0: print "%s: Batch put %d items!" % (self.threadID, icnt)
+          if icnt % 1000 == 0:
+            tt = time.time()
+            print "%s: Batch put %d items!, avg_rate %f, curr_rate %f" % (self.threadID, icnt, icnt/(tt - t0), icnt/(tt - tn))
+            tn = tt
           icnt +=1
 
 threads = [MyTask("thread %s" % e).start() for x,e in enumerate(range(8))]
