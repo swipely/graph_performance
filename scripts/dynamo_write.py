@@ -64,7 +64,7 @@ class MyTask(threading.Thread):
         t0 = tn = time.time()
         while True:
           batch.put_item(
-            Item={'hk':bytearray(f.read(12)),'rk':bytearray(f.read(18)),'v':bytearray(f.read(10000))}
+            Item={'hk':bytearray(f.read(12)),'rk':bytearray(f.read(18)),'v':bytearray(f.read(30))}
             # Item={'hk':HK,'rk':bytearray(f.read(18)),'v':bytearray(f.read(300))}
             )
           if icnt % 1000 == 0:
