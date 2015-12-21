@@ -13,6 +13,9 @@ class MyTask(threading.Thread):
 
   def run(self):
     print '%s: Starting... setup table: %s' % (self.threadID, TABLE_NAME)
+
+    time.sleep(self.threadID)
+
     dynamodb = boto3.resource('dynamodb')
 
     table = dynamodb.Table(TABLE_NAME)
