@@ -54,7 +54,7 @@ with open("/dev/urandom","rb") as f:
       batch.put_item(
         Item={'hk':bytearray(f.read(12)),'rk':bytearray(f.read(18)),'v':bytearray(f.read(30))}
         )
-      print "Batch put %d items!" % icnt if icnt % 1000 == 0
+      if icnt % 1000 == 0: print "Batch put %d items!" % icnt
       icnt +=1
 
 
