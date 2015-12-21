@@ -41,14 +41,21 @@ print 'Waiting for active status'
 table.meta.client.get_waiter('table_exists').wait(TableName=TABLE_NAME)
 
 # Print out some data about the table.
-print "Item count %d" % table.item_count
+print "Item count %d... sleeping 10" % table.item_count
 
+sleep(10)
+
+
+print 'Putting items!'
+icnt = 1
 with open("/dev/urandom","rb") as f:
   with table.batch_writer() as batch:
     while True:
       batch.put_item(
         Item={'hk':bytearray(f.read(12)),'rk':bytearray(f.read(18)),'v':bytearray(f.read(30))}
         )
+      print "Batch put %d items!" % icnt if icnt % 1000 == 0
+      icnt +=1
 
 
 
