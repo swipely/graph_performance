@@ -61,8 +61,8 @@ class MyTask(threading.Thread):
       with table.batch_writer() as batch:
         while True:
           batch.put_item(
-            # Item={'hk':bytearray(f.read(12)),'rk':bytearray(f.read(18)),'v':bytearray(f.read(30))}
-            Item={'hk':HK,'rk':bytearray(f.read(18)),'v':bytearray(f.read(30))}
+            Item={'hk':bytearray(f.read(12)),'rk':bytearray(f.read(18)),'v':bytearray(f.read(300))}
+            # Item={'hk':HK,'rk':bytearray(f.read(18)),'v':bytearray(f.read(300))}
             )
           if icnt % 1000 == 0: print "%s: Batch put %d items!" % (self.threadID, icnt)
           icnt +=1
