@@ -64,7 +64,7 @@ class MyTask(threading.Thread):
           if icnt % 1000 == 0: print "%s: Batch put %d items!" % (self.threadID, icnt)
           icnt +=1
 
-threads = [MyTask("thread %s" % e).start() for x,e in enumerate(range(2))]
+threads = [MyTask("thread %s" % e).start() for x,e in enumerate(range(8))]
 
 
 
