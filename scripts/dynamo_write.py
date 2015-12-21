@@ -7,14 +7,15 @@ TABLE_NAME = "t_console_edge_store"
 HK = bytearray('one_partition')
 
 class MyTask(threading.Thread):
-  def __init__(self, threadID):
+  def __init__(self, thread_number):
         threading.Thread.__init__(self)
-        self.threadID = threadID
+        self.threadID = "thread %s" %  thread_number
+        self.thread_number = thread_number
 
   def run(self):
     print '%s: Starting... setup table: %s' % (self.threadID, TABLE_NAME)
 
-    time.sleep(float(self.threadID))
+    time.sleep(float(self.thread_number))
 
     dynamodb = boto3.resource('dynamodb')
 
@@ -76,7 +77,7 @@ class MyTask(threading.Thread):
             tn = tt
           icnt +=1
 
-threads = [MyTask("thread %s" % e).start() for x,e in enumerate(range(8))]
+threads = [MyTask(e).start() for x,e in enumerate(range(8))]
 
 
 
