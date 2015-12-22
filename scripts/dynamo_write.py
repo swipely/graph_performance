@@ -4,6 +4,7 @@ import time
 
 TABLE_NAME = "t_console_edge_store"
 
+# Used to explicitly test with a single hot partition
 HK = bytearray('one_partition')
 
 class MyTask(threading.Thread):
@@ -68,7 +69,10 @@ class MyTask(threading.Thread):
         t0 = tn = time.time()
         while True:
           batch.put_item(
+            # Generate random byte array data for partition key, range key and value to test throughput for
+            # a balanced writes across the dynamo partitions.
             Item={'hk':bytearray(f.read(12)),'rk':bytearray(f.read(18)),'v':bytearray(f.read(30))}
+            # to examine behavior with a hot partition, use this line instead:
             # Item={'hk':HK,'rk':bytearray(f.read(18)),'v':bytearray(f.read(300))}
             )
           if icnt % 1000 == 0:
