@@ -1,8 +1,14 @@
 import boto3
 import threading
 import time
+import sys
 
 TABLE_NAME = "t_console_edge_store"
+
+# takes one optional argument - the number number of threads to run
+NUM_THREADS = int(sys.argv[1] or 1) if len(sys.argv) == 2 else 1
+
+print "NUM_THREADS: %s" % NUM_THREADS
 
 # Used to explicitly test with a single hot partition
 HK = bytearray('one_partition')
@@ -24,6 +30,7 @@ class MyTask(threading.Thread):
 
 
     # Create the DynamoDB table.
+    # Modeled after Titan GraphDb Edge Store table for dynamo backend
     table = table or dynamodb.create_table(
         TableName='t_mock_edge_store',
         KeySchema=[
@@ -81,7 +88,7 @@ class MyTask(threading.Thread):
             tn = tt
           icnt +=1
 
-threads = [MyTask(e).start() for x,e in enumerate(range(8))]
+threads = [MyTask(e).start() for x,e in enumerate(range(NUM_THREADS))]
 
 
 
