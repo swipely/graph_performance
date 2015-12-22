@@ -18,16 +18,17 @@ class KPI
 
   attr_reader :name
 
-  def initialize(name, type, sort_order)
+  def initialize(name, type, primary_sort_order)
     @name = name
     @type = type
-    @sort_order = Order.value_of(sort_order)
+    @primary_sort_order = Order.value_of(primary_sort_order)
   end
 
   def build_schema(mgmt, members_edge, not_indexed)
     property = mgmt.make_property_key(name).data_type(@type).make
     unless not_indexed
-      mgmt.build_edge_index(members_edge, "members_by_#{name}", Direction::OUT, @sort_order, property)
+      mgmt.build_edge_index(members_edge, "members_by_#{name}_DESC", Direction::OUT, Order.value_of('DESC'), property)
+      mgmt.build_edge_index(members_edge, "members_by_#{name}_ASC", Direction::OUT, Order.value_of('ASC'), property)
     end
   end
 
