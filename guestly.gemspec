@@ -17,9 +17,8 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 1.9.3p551'
 
-  spec.add_dependency 'pacer'
-  spec.add_dependency 'pacer-titan'
   spec.add_dependency 'activesupport'
+  spec.add_dependency 'lock_jar', '~> 0.14.5'
 
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec'

@@ -1,13 +1,17 @@
 require 'json'
-require 'pacer-titan'
 require 'optparse'
 require 'logger'
+require 'lock_jar'
+
+LockJar.load
+require 'java'
 java_import 'java.lang.System'
 java_import 'java.util.Random'
+java_import 'com.thinkaurelius.titan.core.TitanFactory'
 java_import 'com.thinkaurelius.titan.core.Multiplicity'
-java_import 'com.tinkerpop.blueprints.Direction'
-java_import 'com.thinkaurelius.titan.core.Order'
-java_import 'com.tinkerpop.blueprints.Vertex'
+java_import 'org.apache.tinkerpop.gremlin.process.traversal.Order'
+java_import 'org.apache.tinkerpop.gremlin.structure.Direction'
+java_import 'org.apache.tinkerpop.gremlin.structure.Vertex'
 
 $logger = Logger.new(STDOUT)
 
@@ -18,17 +22,16 @@ class KPI
 
   attr_reader :name
 
-  def initialize(name, type, primary_sort_order)
+  def initialize(name, type, _primary_sort_order)
     @name = name
     @type = type
-    @primary_sort_order = Order.value_of(primary_sort_order)
   end
 
   def build_schema(mgmt, members_edge, not_indexed)
     property = mgmt.make_property_key(name).data_type(@type).make
     unless not_indexed
-      mgmt.build_edge_index(members_edge, "members_by_#{name}_DESC", Direction::OUT, Order.value_of('DESC'), property)
-      mgmt.build_edge_index(members_edge, "members_by_#{name}_ASC", Direction::OUT, Order.value_of('ASC'), property)
+      mgmt.build_edge_index(members_edge, "members_by_#{name}_DESC", Direction::OUT, Order.decr, property)
+      mgmt.build_edge_index(members_edge, "members_by_#{name}_ASC", Direction::OUT, Order.incr, property)
     end
   end
 
@@ -77,7 +80,7 @@ end
 
 def build_schema(graph, kpis, not_indexed, not_partitioned)
   $logger.debug 'Building the schema'
-  mgmt = graph.blueprints_graph.get_management_system
+  mgmt = graph.open_management
 
   define_vertex(mgmt, 'store', not_partitioned)
   define_vertex(mgmt, 'store_guest', true)
@@ -111,27 +114,40 @@ end
 def populate_graph(graph, num_guests, kpis)
   $logger.debug 'Populating the graph'
   random = Random.new(System.current_time_millis)
-  log_slice = [(num_guests / 10), 1000].min
+  log_slice = [[(num_guests / 10), 1].max, 1000].min
 
-  graph.transaction do
-    store_vertex = graph.create_vertex(label: 'store', store_pretty_url: 'blue-star-cafe-and-pub-seattle')
+  transaction(graph) do |graph|
+    store_vertex = graph.add_vertex('store')
+    store_vertex.property('store_pretty_url', 'blue-star-cafe-and-pub-seattle')
+
     all_guests_id = 'all'
-    all_guests = graph.create_vertex(label: 'store_guest_list', guest_list_id: all_guests_id, guest_list_name: 'All Guests')
-    store_vertex.add_edges_to(:guest_lists, all_guests, guest_list_id: all_guests_id)
+    all_guests = graph.add_vertex('store_guest_list')
+    all_guests.property('guest_list_id', all_guests_id)
+    all_guests.property('guest_list_name', 'All Guests')
+    store_vertex.add_edge('guest_lists', all_guests, 'guest_list_id', all_guests_id)
 
     num_guests.times do |i|
-      guest_vertex = graph.create_vertex(label: 'store_guest', guest_id: i.to_s)
-      props = Hash[kpis.map { |kpi| [kpi.name, kpi.generate_value(random)] }]
-      all_guests.add_edges_to(:members, guest_vertex, props)
+      guest_vertex = graph.add_vertex('store_guest')
+      guest_vertex.property('guest_id', i.to_s)
+      props = kpis.flat_map { |kpi| [kpi.name, kpi.generate_value(random)] }
+      all_guests.add_edge('members', guest_vertex, *props)
       $logger.debug "#{i + 1} guests created" if ((i + 1) % log_slice == 0)
 
       if (i + 1) % 1000 == 0
         $logger.debug 'Committing implicit transaction'
-        graph.commit_implicit_transaction
+        graph.tx.commit
       end
     end
   end
   $logger.debug 'Done populating the graph'
+end
+
+def transaction(graph)
+  yield graph
+  $logger.debug 'Successfuly populated the graph'
+ensure
+  $logger.debug 'About to commit'
+  graph.tx.commit
 end
 
 options = { dynamo_config: 'config/dynamo_local.properties', not_indexed: false, not_partitioned: false }
@@ -172,7 +188,7 @@ $logger.debug "Generating guest list data, options = #{options.inspect}"
 num_guests = options[:guests_count]
 kpis = KPI.value_of(*options[:kpis])
 
-graph = Pacer.titan(options[:dynamo_config])
+graph = TitanFactory.open(options[:dynamo_config])
 build_schema(graph, kpis, options[:not_indexed], options[:not_partitioned])
 populate_graph(graph, num_guests, kpis)
 
