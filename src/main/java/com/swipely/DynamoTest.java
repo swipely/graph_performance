@@ -231,6 +231,17 @@ public class DynamoTest {
 
         // final VertexLabel ticketLabel = mgmt.makeVertexLabel(TICKET_VERTEX_LABEL).make();
 
+        mgmt.buildIndex("byStorePrettyUrl", Vertex.class).addKey(storePrettyUrlKey).unique().buildCompositeIndex();
+        mgmt.buildIndex("byBrandPrettyUrl", Vertex.class).addKey(brandPrettyUrlKey).unique().buildCompositeIndex();
+        mgmt.buildIndex("byMerchantPrettyUrl", Vertex.class).addKey(merchantPrettyUrlKey).unique().buildCompositeIndex();
+        mgmt.buildIndex("byTimezone", Vertex.class).addKey(timezoneKey).unique().buildCompositeIndex();
+        mgmt.buildIndex("byGuest", Vertex.class).addKey(guestKey).unique().buildCompositeIndex();
+        mgmt.buildIndex("byCardToken", Vertex.class).addKey(cardTokenKey).unique().buildCompositeIndex();
+        mgmt.buildIndex("byLoyaltyId", Vertex.class).addKey(loyaltyKey).unique().buildCompositeIndex();
+        mgmt.buildIndex("byEmail", Vertex.class).addKey(emailKey).buildCompositeIndex();
+        mgmt.buildIndex("byGuestName", Vertex.class).addKey(guestNameKey).buildCompositeIndex();
+        mgmt.buildIndex("byOtId", Vertex.class).addKey(otKey).unique().buildCompositeIndex();
+
         // mgmt.buildIndex("byStorePrettyUrl",
         // Vertex.class).addKey(storePrettyUrlKey).unique().buildCompositeIndex();
         // mgmt.buildEdgeIndex(ticketsEdge,"byDateAndTicketId", Direction.OUT,
