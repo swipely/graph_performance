@@ -21,6 +21,8 @@ import com.thinkaurelius.titan.core.TitanTransaction;
 import com.thinkaurelius.titan.core.VertexLabel;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
 
+import javax.sound.midi.SysexMessage;
+
 public class DynamoTest {
 
     private static final String TICKETS_EDGE_LABEL = "tickets";
@@ -29,11 +31,17 @@ public class DynamoTest {
     public static void main(String[] args) throws InterruptedException {
         final TitanGraph g = TitanFactory.open(getConf());
 
-        
+        if (args[0] == "true")
+        {
+            System.out.println("Setting Titan schema!");
+            setSchema(g);
+        } else {
+            System.out.println("Assuming Titan schema already set.");
+        }
 
         final long ts = System.currentTimeMillis();
         try {
-            g.io(IoCore.graphson()).readGraph("/tmp/tinkergraph.json");
+            g.io(IoCore.graphson()).readGraph(args[2]);
         } catch (IOException e) {
             e.printStackTrace();
         }
