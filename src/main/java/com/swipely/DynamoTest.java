@@ -174,7 +174,33 @@ public class DynamoTest {
         // final PropertyKey ticketIdKey =
         // mgmt.makePropertyKey("ticket_id").dataType(String.class).make();
 
-        final EdgeLabel ticketsEdge = mgmt.makeEdgeLabel(TICKETS_EDGE_LABEL).multiplicity(Multiplicity.MULTI).make();
+        mgmt.makeEdgeLabel("members").multiplicity(Multiplicity.ONE2MANY).make();
+        mgmt.makeEdgeLabel("guest_lists").multiplicity(Multiplicity.ONE2MANY).make();
+        // Edge labels
+        mgmt.makeEdgeLabel("has").multiplicity(Multiplicity.ONE2MANY).make();           // Customer has Profile, otCustomer has otReservation, Store has Tickets, etc
+        mgmt.makeEdgeLabel("in").multiplicity(Multiplicity.MANY2ONE).make();           // Store in Brand, Brand in Group
+        mgmt.makeEdgeLabel("timezone").multiplicity(Multiplicity.MANY2ONE).make();      // Store timezone Timezone
+        mgmt.makeEdgeLabel("served").multiplicity(Multiplicity.SIMPLE).make();          // Server served Ticket
+        final EdgeLabel withEdge = mgmt.makeEdgeLabel("with").multiplicity(Multiplicity.MANY2ONE).make();          // settlement with card_token, authorization with card_token
+        mgmt.makeEdgeLabel("ordered").multiplicity(Multiplicity.SIMPLE).make();       // ticket ordered Item
+        mgmt.makeEdgeLabel("tendered").multiplicity(Multiplicity.ONE2MANY).make();      // Customer tendered payment
+        mgmt.makeEdgeLabel("authorized").multiplicity(Multiplicity.ONE2MANY).make();    // payment authorized authorization
+        mgmt.makeEdgeLabel("settled").multiplicity(Multiplicity.ONE2MANY).make();       // payment settled settlement
+        mgmt.makeEdgeLabel("for").multiplicity(Multiplicity.MANY2ONE).make();           // payment for ticket
+        mgmt.makeEdgeLabel("enrolled").multiplicity(Multiplicity.ONE2MANY).make();      // LoyaltyMember enrolled CardToken
+        final EdgeLabel guestsEdge = mgmt.makeEdgeLabel("guests").multiplicity(Multiplicity.ONE2MANY).make();          // store guests Guest
+        final EdgeLabel ticketsEdge = mgmt.makeEdgeLabel("tickets").multiplicity(Multiplicity.ONE2MANY).make();          // store tickets Ticket, etc
+        final EdgeLabel settlementsEdge = mgmt.makeEdgeLabel("settlements").multiplicity(Multiplicity.ONE2MANY).make(); // Store settlements settlement
+        final EdgeLabel authorizationsEdge = mgmt.makeEdgeLabel("authorizations").multiplicity(Multiplicity.ONE2MANY).make();    // Store authorizations authorization
+        final EdgeLabel paymentsEdge = mgmt.makeEdgeLabel("payments").multiplicity(Multiplicity.ONE2MANY).make();      // store payments payment
+        final EdgeLabel itemsEdge = mgmt.makeEdgeLabel("items").multiplicity(Multiplicity.ONE2MANY).make();    // Store items item
+        final EdgeLabel categoriesEdge = mgmt.makeEdgeLabel("categories").multiplicity(Multiplicity.ONE2MANY).make();    // Store categories category
+        final EdgeLabel serversEdge = mgmt.makeEdgeLabel("servers").multiplicity(Multiplicity.ONE2MANY).make();    // Store items item
+
+        // More than one Nick Name?
+        mgmt.makeEdgeLabel("is_a").multiplicity(Multiplicity.MANY2ONE).make();          // Customer is_a otCustomer
+
+        // final EdgeLabel ticketsEdge = mgmt.makeEdgeLabel(TICKETS_EDGE_LABEL).multiplicity(Multiplicity.MULTI).make();
 
         // this is for partitioned stores.
         // store = mgmt.makeVertexLabel("store").partition().make()
