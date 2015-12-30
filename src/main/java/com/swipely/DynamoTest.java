@@ -87,6 +87,86 @@ public class DynamoTest {
 
         final TitanManagement mgmt = g.openManagement();
 
+
+        // Edge properties
+        mgmt.makePropertyKey("weight").dataType(Float.class).make();
+        mgmt.makePropertyKey("unit_price").dataType(Integer.class).make();
+        mgmt.makePropertyKey("quantity").dataType(Integer.class).make();
+        mgmt.makePropertyKey("item_sales").dataType(Integer.class).make();
+
+        final PropertyKey dateKey = mgmt.makePropertyKey("date").dataType(String.class).make();
+        final PropertyKey reconciledKey = mgmt.makePropertyKey("reconciled").dataType(Boolean.class).make();
+        final PropertyKey classKey = mgmt.makePropertyKey("class").dataType(String.class).make();
+
+        // Settlement and Authorization Properties
+        final PropertyKey ledgerIdKey = mgmt.makePropertyKey("ledger_id").dataType(String.class).make();
+        final PropertyKey reconciliationCodeKey = mgmt.makePropertyKey("reconciliation_code").dataType(String.class).make();
+        final PropertyKey occurredAtKey = mgmt.makePropertyKey("occurred_at").dataType(String.class).make();
+
+        // Vertex Properties
+        final PropertyKey guestKey = mgmt.makePropertyKey("guest").dataType(String.class).make();
+        final PropertyKey loyaltyKey = mgmt.makePropertyKey("loyalty_id").dataType(String.class).make();
+        final PropertyKey otKey = mgmt.makePropertyKey("ot_id").dataType(String.class).make();
+        final PropertyKey emailKey = mgmt.makePropertyKey("email").dataType(String.class).make();
+        final PropertyKey guestNameKey = mgmt.makePropertyKey("guest_name").dataType(String.class).make();
+
+        final PropertyKey storePrettyUrlKey = mgmt.makePropertyKey("store_pretty_url").dataType(String.class).make();
+        final PropertyKey brandPrettyUrlKey = mgmt.makePropertyKey("brand_pretty_url").dataType(String.class).make();
+        final PropertyKey merchantPrettyUrlKey = mgmt.makePropertyKey("merchant_pretty_url").dataType(String.class).make();
+        final PropertyKey timezoneKey = mgmt.makePropertyKey("timezone_name").dataType(String.class).make();
+
+        // Card token properties
+        final PropertyKey cardTokenKey = mgmt.makePropertyKey("card_token").dataType(String.class).make();
+        mgmt.makePropertyKey("card_type").dataType(String.class).make();
+        mgmt.makePropertyKey("exp_date").dataType(String.class).make();
+        mgmt.makePropertyKey("last_four").dataType(String.class).make();
+
+        // Settlement and Authorization Properties
+        mgmt.makePropertyKey("deposited_on").dataType(String.class).make();
+        mgmt.makePropertyKey("fd_auth_date").dataType(String.class).make();
+        mgmt.makePropertyKey("created_at_order").dataType(String.class).make();
+        mgmt.makePropertyKey("financial_transactions_authorization_id").dataType(String.class).make();
+        mgmt.makePropertyKey("authorization_price").dataType(Integer.class).make();
+        mgmt.makePropertyKey("settlement_price").dataType(Integer.class).make();
+        mgmt.makePropertyKey("reconciliation_order").dataType(String.class).make();
+        mgmt.makePropertyKey("reject").dataType(Boolean.class).make();
+
+        // Tickets
+        mgmt.makePropertyKey("open_time").dataType(String.class).make();
+        mgmt.makePropertyKey("open_hour").dataType(String.class).make();
+        mgmt.makePropertyKey("close_time").dataType(String.class).make();
+        mgmt.makePropertyKey("turn_time_seconds").dataType(Integer.class).make();
+        mgmt.makePropertyKey("total_price").dataType(Integer.class).make();
+        mgmt.makePropertyKey("tax").dataType(Integer.class).make();
+        mgmt.makePropertyKey("covers").dataType(Integer.class).make();
+        mgmt.makePropertyKey("table").dataType(String.class).make();
+
+        final PropertyKey ticketIdKey = mgmt.makePropertyKey("ticket_id").dataType(String.class).make();
+        final PropertyKey storeDayKey = mgmt.makePropertyKey("store_day").dataType(String.class).make();
+
+        // Servers
+        final PropertyKey serverFirstNameKey = mgmt.makePropertyKey("server_first_name").dataType(String.class).make();
+        final PropertyKey serverLastNameKey = mgmt.makePropertyKey("server_last_name").dataType(String.class).make();
+        final PropertyKey serverIdKey = mgmt.makePropertyKey("server_id").dataType(String.class).make();
+
+
+        // Items
+        final PropertyKey itemNameKey = mgmt.makePropertyKey("item_name").dataType(String.class).make();
+        final PropertyKey itemIdKey = mgmt.makePropertyKey("item_id").dataType(String.class).make();
+
+        // Categories
+        final PropertyKey categoryKey = mgmt.makePropertyKey("category_name").dataType(String.class).make();
+
+        // Payment
+        mgmt.makePropertyKey("amount").dataType(Integer.class).make();
+        final PropertyKey authCodeKey = mgmt.makePropertyKey("auth_code").dataType(String.class).make(); // also an edge property
+        mgmt.makePropertyKey("cardholder_name").dataType(String.class).make();
+        mgmt.makePropertyKey("payment_type").dataType(String.class).make();
+        mgmt.makePropertyKey("tip").dataType(String.class).make();
+
+        mgmt.makePropertyKey('guest_list_id').data_type(String.class).make();
+        mgmt.makePropertyKey('guest_list_name').data_type(String.class).make();
+        
         // final PropertyKey storePrettyUrlKey =
         // mgmt.makePropertyKey("store_pretty_url").dataType(String.class).make();
         // final PropertyKey dateKey =
