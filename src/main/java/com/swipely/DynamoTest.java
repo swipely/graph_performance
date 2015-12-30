@@ -244,6 +244,27 @@ public class DynamoTest {
 
         // mgmt.buildIndex("byStorePrettyUrl",
         // Vertex.class).addKey(storePrettyUrlKey).unique().buildCompositeIndex();
+
+        mgmt.buildEdgeIndex(ticketsEdge, "byStatusAndDate", Direction.OUT, Order.decr, reconciledKey, dateKey);
+        mgmt.buildEdgeIndex(ticketsEdge, "byDateAndTicketId", Direction.OUT, Order.decr, dateKey, ticketIdKey);
+
+        mgmt.buildEdgeIndex(authorizationsEdge, "byDate", Direction.OUT, Order.decr, dateKey);
+        mgmt.buildEdgeIndex(authorizationsEdge, "byStatusAndDate", Direction.OUT, Order.decr, reconciledKey, dateKey);
+
+        mgmt.buildEdgeIndex(settlementsEdge, "byDate", Direction.OUT, Order.decr, dateKey);
+        mgmt.buildEdgeIndex(settlementsEdge, "byStatusAndDate", Direction.OUT, Order.decr, reconciledKey, dateKey);
+
+        mgmt.buildEdgeIndex(categoriesEdge, "byCategory", Direction.OUT, Order.decr, categoryKey);
+
+        mgmt.buildEdgeIndex(itemsEdge, "byItems", Direction.OUT, Order.decr, itemNameKey, itemIdKey);
+
+        mgmt.buildEdgeIndex(serversEdge, "byServer", Direction.OUT, Order.decr, serverLastNameKey, serverFirstNameKey, serverIdKey);
+
+        mgmt.buildEdgeIndex(withEdge, "byLedgerId", Direction.IN, Order.decr, ledgerIdKey);
+        mgmt.buildEdgeIndex(withEdge, "byReconcilaitionCodeAndDateTime", Direction.IN, Order.decr, reconciliationCodeKey, occurredAtKey);
+
+        mgmt.buildEdgeIndex(paymentsEdge, "byAuthCodeAndDate", Direction.OUT, Order.decr, authCodeKey, dateKey);
+
         // mgmt.buildEdgeIndex(ticketsEdge,"byDateAndTicketId", Direction.OUT,
         // Order.decr,dateKey,ticketIdKey);
 
