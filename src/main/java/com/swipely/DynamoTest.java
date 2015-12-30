@@ -205,7 +205,31 @@ public class DynamoTest {
         // this is for partitioned stores.
         // store = mgmt.makeVertexLabel("store").partition().make()
         // final VertexLabel storeLabel = mgmt.makeVertexLabel("store").make();
-        final VertexLabel ticketLabel = mgmt.makeVertexLabel(TICKET_VERTEX_LABEL).make();
+        //
+
+        mgmt.makeVertexLabel("store_guest_list").make();
+        final VertexLabel store = mgmt.makeVertexLabel("store").make();
+        final VertexLabel brand = mgmt.makeVertexLabel("brand").make();
+        final VertexLabel merchant = mgmt.makeVertexLabel("merchant").make();
+        final VertexLabel timezone = mgmt.makeVertexLabel("timezone").make();
+
+        // data in stores
+        final VertexLabel ticket = mgmt.makeVertexLabel("ticket").make();
+        final VertexLabel guest = mgmt.makeVertexLabel("guest").make();
+        final VertexLabel settlement = mgmt.makeVertexLabel("settlement").make();
+        final VertexLabel authorization =  mgmt.makeVertexLabel("authorization").make();
+        final VertexLabel payment = mgmt.makeVertexLabel("payment").make();
+        final VertexLabel item = mgmt.makeVertexLabel("item").make();
+        final VertexLabel category = mgmt.makeVertexLabel("category").make();
+        final VertexLabel server = mgmt.makeVertexLabel("server").make();
+        final VertexLabel cardToken = mgmt.makeVertexLabel("card_token").make();
+        final VertexLabel profile = mgmt.makeVertexLabel("profile").make();
+        final VertexLabel nickname = mgmt.makeVertexLabel("nickname").make();
+        final VertexLabel loyaltyMember = mgmt.makeVertexLabel("loyalty_member").make();
+        final VertexLabel otCustomer = mgmt.makeVertexLabel("ot_guest").make();
+        final VertexLabel otReservation = mgmt.makeVertexLabel("ot_reservation").make();
+
+        // final VertexLabel ticketLabel = mgmt.makeVertexLabel(TICKET_VERTEX_LABEL).make();
 
         // mgmt.buildIndex("byStorePrettyUrl",
         // Vertex.class).addKey(storePrettyUrlKey).unique().buildCompositeIndex();
