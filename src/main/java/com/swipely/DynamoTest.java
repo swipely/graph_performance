@@ -27,70 +27,30 @@ public class DynamoTest {
     private static final String TICKET_VERTEX_LABEL = "ticket";
 
     public static void main(String[] args) throws InterruptedException {
-        final Integer data_size = Integer.valueOf(600_000);
-        // Tail gators for all-time has ~600k vertices + 1.6M edges
-        // back of hand: at least two columns per vertex, and two more columns per edge
-        // for the forward and reverse edges. With 1.6M edges, this means 3M columns for edges and
-        // 1.2M columns at least for vertices. Round up and double for margin and end up with estimated
-        // mutations of 10M mutations
-        final Integer mutations = Integer.valueOf(10_000_000);
+        final TitanGraph g = TitanFactory.open(getConf());
 
-        final BaseConfiguration conf = new BaseConfiguration();
-        conf.setProperty("storage.dynamodb.prefix", "t_crm_titan");
-        conf.setProperty("schema.default", "none");
-        conf.setProperty("storage.batch-loading", "true");
+        
 
-        conf.setProperty("storage.dynamodb.force-consistent-read", "false");
-        conf.setProperty("storage.dynamodb.max-self-throttled-retries", "60");
-        conf.setProperty("storage.dynamodb.control-plane-rate", "10");
+        final long ts = System.currentTimeMillis();
+        try {
+            g.io(IoCore.graphson()).readGraph("/tmp/tinkergraph.json");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        g.close();
+        final long te = System.currentTimeMillis();
 
-        //32 partitions
-        conf.setProperty("storage.dynamodb.stores.edgestore.capacity-read", "1");
-        conf.setProperty("storage.dynamodb.stores.edgestore.capacity-write", "31968");
-        conf.setProperty("storage.dynamodb.stores.edgestore.read-rate", "1");
-        conf.setProperty("storage.dynamodb.stores.edgestore.write-rate", "31968");
+        System.out.println("Imported tail gators all time in " + Double.toString((te - ts) / 1000.0) + " s");
 
-//        conf.setProperty("storage.dynamodb.stores.graphindex.capacity-read", "12000");
-//        conf.setProperty("storage.dynamodb.stores.graphindex.capacity-write", "12000");
-//        conf.setProperty("storage.dynamodb.stores.graphindex.read-rate", "12000");
-//        conf.setProperty("storage.dynamodb.stores.graphindex.write-rate", "12000");
+        //need to use same tx scope if you are reusing vertex objects, otherwise
+        //you would need to re-read the vertexes in the new transaction where you are creating
+        //edges.
+    }
 
-        conf.setProperty("storage.dynamodb.stores.titan_ids.capacity-read", "100");
-        conf.setProperty("storage.dynamodb.stores.titan_ids.capacity-write", "100");
-        conf.setProperty("storage.dynamodb.stores.titan_ids.read-rate", "100");
-        conf.setProperty("storage.dynamodb.stores.titan_ids.write-rate", "100");
-
-        conf.setProperty("storage.dynamodb.stores.system_properties.capacity-read", "100");
-        conf.setProperty("storage.dynamodb.stores.system_properties.capacity-write", "100");
-        conf.setProperty("storage.dynamodb.stores.system_properties.read-rate", "100");
-        conf.setProperty("storage.dynamodb.stores.system_properties.write-rate", "100");
-
-        conf.setProperty("storage.dynamodb.client.connection-max", "1706");
-        conf.setProperty("storage.dynamodb.client.retry-error-max", "0");
-        conf.setProperty("storage.dynamodb.client.executor.core-pool-size", "1705");
-        conf.setProperty("storage.dynamodb.client.executor.max-pool-size", "1705");
-        conf.setProperty("storage.dynamodb.client.executor.max-queue-length", mutations.toString());
-
-        conf.setProperty("storage.backend", "com.amazon.titan.diskstorage.dynamodb.DynamoDBStoreManager");
-        conf.setProperty("storage.dynamodb.client.credentials.class-name",
-                "com.amazonaws.auth.DefaultAWSCredentialsProviderChain");
-        conf.setProperty("storage.dynamodb.client.credentials.constructor-args", "");
-        conf.setProperty("storage.dynamodb.client.endpoint", "https://dynamodb.us-east-1.amazonaws.com");
-
-        conf.setProperty("storage.buffer-size", mutations.toString());
-//        conf.setProperty("storage.setup-wait", "300000"); //is this necessary?
-        conf.setProperty("ids.block-size", data_size.toString());
-        conf.setProperty("storage.write-time", "1 ms");
-        conf.setProperty("storage.read-time", "1 ms");
-        // conf.setProperty("cluster.partition", "true")
-        // conf.setProperty("cluster.max-partitions", "32")
-        conf.setProperty("ids.flush", "false");
-        final TitanGraph g = TitanFactory.open(conf);
-
-        final long tStart = System.currentTimeMillis();
+    private static void setSchema(TitanGraph g) {
+        final long ts = System.currentTimeMillis();
 
         final TitanManagement mgmt = g.openManagement();
-
 
         // Edge properties
         mgmt.makePropertyKey("weight").dataType(Float.class).make();
@@ -274,29 +234,70 @@ public class DynamoTest {
 
         mgmt.commit();
 
-        final long tSchema = System.currentTimeMillis();
+        final long te = System.currentTimeMillis();
+        System.out.println("Set schema in " + Double.toString((te - ts) / 1000.0) + " s");
+    }
 
-        System.out.println("Set schema in " + Double.toString((tSchema - tStart) / 1000.0) + " s");
+    private static BaseConfiguration getConf() {
+        final Integer data_size = Integer.valueOf(600_000);
+        // Tail gators for all-time has ~600k vertices + 1.6M edges
+        // back of hand: at least two columns per vertex, and two more columns per edge
+        // for the forward and reverse edges. With 1.6M edges, this means 3M columns for edges and
+        // 1.2M columns at least for vertices. Round up and double for margin and end up with estimated
+        // mutations of 10M mutations
+        final Integer mutations = Integer.valueOf(10_000_000);
 
-        try {
-            g.io(IoCore.graphson()).readGraph("/tmp/tinkergraph.json");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        final BaseConfiguration conf = new BaseConfiguration();
+        conf.setProperty("storage.dynamodb.prefix", "t_crm_titan");
+        conf.setProperty("schema.default", "none");
+        conf.setProperty("storage.batch-loading", "true");
 
-        final long tImport = System.currentTimeMillis();
+        conf.setProperty("storage.dynamodb.force-consistent-read", "false");
+        conf.setProperty("storage.dynamodb.max-self-throttled-retries", "60");
+        conf.setProperty("storage.dynamodb.control-plane-rate", "10");
 
-        System.out.println("Imported tail gators all time in " + Double.toString((tImport - tSchema) / 1000.0) + " s");
+        //32 partitions
+        conf.setProperty("storage.dynamodb.stores.edgestore.capacity-read", "1");
+        conf.setProperty("storage.dynamodb.stores.edgestore.capacity-write", "31968");
+        conf.setProperty("storage.dynamodb.stores.edgestore.read-rate", "1");
+        conf.setProperty("storage.dynamodb.stores.edgestore.write-rate", "31968");
 
-        System.out.println("Closing...");
-        g.close();
+//        conf.setProperty("storage.dynamodb.stores.graphindex.capacity-read", "12000");
+//        conf.setProperty("storage.dynamodb.stores.graphindex.capacity-write", "12000");
+//        conf.setProperty("storage.dynamodb.stores.graphindex.read-rate", "12000");
+//        conf.setProperty("storage.dynamodb.stores.graphindex.write-rate", "12000");
 
-        final long tClose = System.currentTimeMillis();
+        conf.setProperty("storage.dynamodb.stores.titan_ids.capacity-read", "100");
+        conf.setProperty("storage.dynamodb.stores.titan_ids.capacity-write", "100");
+        conf.setProperty("storage.dynamodb.stores.titan_ids.read-rate", "100");
+        conf.setProperty("storage.dynamodb.stores.titan_ids.write-rate", "100");
 
-        System.out.println("Closed graph in " + Double.toString((tClose - tImport) / 1000.0) + " s");
+        conf.setProperty("storage.dynamodb.stores.system_properties.capacity-read", "100");
+        conf.setProperty("storage.dynamodb.stores.system_properties.capacity-write", "100");
+        conf.setProperty("storage.dynamodb.stores.system_properties.read-rate", "100");
+        conf.setProperty("storage.dynamodb.stores.system_properties.write-rate", "100");
 
-        //need to use same tx scope if you are reusing vertex objects, otherwise
-        //you would need to re-read the vertexes in the new transaction where you are creating
-        //edges.
+        conf.setProperty("storage.dynamodb.client.connection-max", "1706");
+        conf.setProperty("storage.dynamodb.client.retry-error-max", "0");
+        conf.setProperty("storage.dynamodb.client.executor.core-pool-size", "1705");
+        conf.setProperty("storage.dynamodb.client.executor.max-pool-size", "1705");
+        conf.setProperty("storage.dynamodb.client.executor.max-queue-length", mutations.toString());
+
+        conf.setProperty("storage.backend", "com.amazon.titan.diskstorage.dynamodb.DynamoDBStoreManager");
+        conf.setProperty("storage.dynamodb.client.credentials.class-name",
+                "com.amazonaws.auth.DefaultAWSCredentialsProviderChain");
+        conf.setProperty("storage.dynamodb.client.credentials.constructor-args", "");
+        conf.setProperty("storage.dynamodb.client.endpoint", "https://dynamodb.us-east-1.amazonaws.com");
+
+        conf.setProperty("storage.buffer-size", mutations.toString());
+//        conf.setProperty("storage.setup-wait", "300000"); //is this necessary?
+        conf.setProperty("ids.block-size", data_size.toString());
+        conf.setProperty("storage.write-time", "1 ms");
+        conf.setProperty("storage.read-time", "1 ms");
+        // conf.setProperty("cluster.partition", "true")
+        // conf.setProperty("cluster.max-partitions", "32")
+        conf.setProperty("ids.flush", "false");
+
+        return conf;
     }
 }
