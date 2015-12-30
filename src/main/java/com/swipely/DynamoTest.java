@@ -1,0 +1,149 @@
+package com.swipely;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import org.apache.commons.configuration.BaseConfiguration;
+import org.apache.tinkerpop.gremlin.process.traversal.Order;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.Transaction;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+
+import com.thinkaurelius.titan.core.EdgeLabel;
+import com.thinkaurelius.titan.core.Multiplicity;
+import com.thinkaurelius.titan.core.PropertyKey;
+import com.thinkaurelius.titan.core.TitanFactory;
+import com.thinkaurelius.titan.core.TitanGraph;
+import com.thinkaurelius.titan.core.TitanTransaction;
+import com.thinkaurelius.titan.core.VertexLabel;
+import com.thinkaurelius.titan.core.schema.TitanManagement;
+
+public class DynamoTest {
+
+    private static final String TICKETS_EDGE_LABEL = "tickets";
+    private static final String TICKET_VERTEX_LABEL = "ticket";
+
+    public static void main(String[] args) throws InterruptedException {
+        final Integer data_size = Integer.valueOf(100_000);
+        final int edgesPerVertex = 10;
+        //back of hand: at least two columns per vertex, and two more columns per edge
+        //for the forward and reverse edges. With 1M edges, this means 2M columns for edges and
+        //200k columns at least for vertices. Double for margin and end up with estimated
+        //mutations of 5M mutations
+        final Integer mutations = Integer.valueOf(5_000_000);
+
+        final BaseConfiguration conf = new BaseConfiguration();
+        conf.setProperty("storage.dynamodb.prefix", "t_crm_titan");
+        conf.setProperty("schema.default", "none");
+        conf.setProperty("storage.batch-loading", "true");
+
+        conf.setProperty("storage.dynamodb.force-consistent-read", "false");
+        conf.setProperty("storage.dynamodb.max-self-throttled-retries", "60");
+        conf.setProperty("storage.dynamodb.control-plane-rate", "10");
+
+        //32 partitions
+        conf.setProperty("storage.dynamodb.stores.edgestore.capacity-read", "1");
+        conf.setProperty("storage.dynamodb.stores.edgestore.capacity-write", "31968");
+        conf.setProperty("storage.dynamodb.stores.edgestore.read-rate", "1");
+        conf.setProperty("storage.dynamodb.stores.edgestore.write-rate", "31968");
+
+//        conf.setProperty("storage.dynamodb.stores.graphindex.capacity-read", "12000");
+//        conf.setProperty("storage.dynamodb.stores.graphindex.capacity-write", "12000");
+//        conf.setProperty("storage.dynamodb.stores.graphindex.read-rate", "12000");
+//        conf.setProperty("storage.dynamodb.stores.graphindex.write-rate", "12000");
+
+        conf.setProperty("storage.dynamodb.stores.titan_ids.capacity-read", "100");
+        conf.setProperty("storage.dynamodb.stores.titan_ids.capacity-write", "100");
+        conf.setProperty("storage.dynamodb.stores.titan_ids.read-rate", "100");
+        conf.setProperty("storage.dynamodb.stores.titan_ids.write-rate", "100");
+
+        conf.setProperty("storage.dynamodb.stores.system_properties.capacity-read", "100");
+        conf.setProperty("storage.dynamodb.stores.system_properties.capacity-write", "100");
+        conf.setProperty("storage.dynamodb.stores.system_properties.read-rate", "100");
+        conf.setProperty("storage.dynamodb.stores.system_properties.write-rate", "100");
+
+        conf.setProperty("storage.dynamodb.client.connection-max", "1706");
+        conf.setProperty("storage.dynamodb.client.retry-error-max", "0");
+        conf.setProperty("storage.dynamodb.client.executor.core-pool-size", "1705");
+        conf.setProperty("storage.dynamodb.client.executor.max-pool-size", "1705");
+        conf.setProperty("storage.dynamodb.client.executor.max-queue-length", mutations.toString());
+
+        conf.setProperty("storage.backend", "com.amazon.titan.diskstorage.dynamodb.DynamoDBStoreManager");
+        conf.setProperty("storage.dynamodb.client.credentials.class-name",
+                "com.amazonaws.auth.DefaultAWSCredentialsProviderChain");
+        conf.setProperty("storage.dynamodb.client.credentials.constructor-args", "");
+        conf.setProperty("storage.dynamodb.client.endpoint", "https://dynamodb.us-east-1.amazonaws.com");
+
+        conf.setProperty("storage.buffer-size", mutations.toString());
+//        conf.setProperty("storage.setup-wait", "300000"); //is this necessary?
+        conf.setProperty("ids.block-size", data_size.toString());
+        conf.setProperty("storage.write-time", "1 ms");
+        conf.setProperty("storage.read-time", "1 ms");
+        // conf.setProperty("cluster.partition", "true")
+        // conf.setProperty("cluster.max-partitions", "32")
+        conf.setProperty("ids.flush", "false");
+        final TitanGraph g = TitanFactory.open(conf);
+
+        final TitanManagement mgmt = g.openManagement();
+
+        // final PropertyKey storePrettyUrlKey =
+        // mgmt.makePropertyKey("store_pretty_url").dataType(String.class).make();
+        // final PropertyKey dateKey =
+        // mgmt.makePropertyKey("date").dataType(String.class).make();
+        // final PropertyKey ticketIdKey =
+        // mgmt.makePropertyKey("ticket_id").dataType(String.class).make();
+
+        final EdgeLabel ticketsEdge = mgmt.makeEdgeLabel(TICKETS_EDGE_LABEL).multiplicity(Multiplicity.MULTI).make();
+
+        // this is for partitioned stores.
+        // store = mgmt.makeVertexLabel("store").partition().make()
+        // final VertexLabel storeLabel = mgmt.makeVertexLabel("store").make();
+        final VertexLabel ticketLabel = mgmt.makeVertexLabel(TICKET_VERTEX_LABEL).make();
+
+        // mgmt.buildIndex("byStorePrettyUrl",
+        // Vertex.class).addKey(storePrettyUrlKey).unique().buildCompositeIndex();
+        // mgmt.buildEdgeIndex(ticketsEdge,"byDateAndTicketId", Direction.OUT,
+        // Order.decr,dateKey,ticketIdKey);
+
+        mgmt.commit();
+        System.out.println("Finished setting schema. Making data");
+
+        final List<Vertex> tickets = new ArrayList<Vertex>();
+
+        // lets use the same seed for consistent order
+        final Random rand = new Random(1000);
+
+        final int numVertices = data_size.intValue();
+        long ts = System.currentTimeMillis();
+        // start a new transaction
+        final TitanTransaction tx = g.newTransaction();
+        for (int i = 0; i < numVertices; i++) {
+            tickets.add(tx.addVertex(TICKET_VERTEX_LABEL));
+        }
+
+        for (int i = 0; i < numVertices; i++) {
+            final Vertex t1 = tickets.get(i);
+            for (int j = 0; j < edgesPerVertex; j++) {
+                //choose target avoiding self loops
+                final int t2_i = (i + 1 + rand.nextInt(numVertices - 1)) % numVertices;
+                final Vertex t2 = tickets.get(t2_i);
+                t1.addEdge(TICKETS_EDGE_LABEL, t2);
+            }
+        }
+        final long te = System.currentTimeMillis();
+        System.out.println("committing edges");
+        tx.commit();
+        //need to use same tx scope if you are reusing vertex objects, otherwise
+        //you would need to re-read the vertexes in the new transaction where you are creating
+        //edges.
+        final long tf = System.currentTimeMillis();
+        System.out.println("Made " + data_size.toString() + " vertices and " + Integer.toString(edgesPerVertex) + " times as many edges in " + Double.toString((te - ts) / 1000.0) + " s and committed in "
+                + Double.toString((tf - te) / 1000.0) + " s");
+
+        System.out.println("Closing...");
+        g.close();
+
+        System.out.println("Tada - inserted ${data_size} tickets and ${edge_size} edges per ticket");
+    }
+}
