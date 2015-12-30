@@ -164,9 +164,9 @@ public class DynamoTest {
         mgmt.makePropertyKey("payment_type").dataType(String.class).make();
         mgmt.makePropertyKey("tip").dataType(String.class).make();
 
-        mgmt.makePropertyKey('guest_list_id').data_type(String.class).make();
-        mgmt.makePropertyKey('guest_list_name').data_type(String.class).make();
-        
+        mgmt.makePropertyKey("guest_list_id").dataType(String.class).make();
+        mgmt.makePropertyKey("guest_list_name").dataType(String.class).make();
+
         // final PropertyKey storePrettyUrlKey =
         // mgmt.makePropertyKey("store_pretty_url").dataType(String.class).make();
         // final PropertyKey dateKey =
