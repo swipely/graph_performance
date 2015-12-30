@@ -41,14 +41,14 @@ public class DynamoTest {
 
         final long ts = System.currentTimeMillis();
         try {
-            g.io(IoCore.graphson()).readGraph(args[2]);
+            g.io(IoCore.graphson()).readGraph(args[1]);
         } catch (IOException e) {
             e.printStackTrace();
         }
         g.close();
         final long te = System.currentTimeMillis();
 
-        System.out.println("Imported tail gators all time in " + Double.toString((te - ts) / 1000.0) + " s");
+        System.out.println("Imported " + args[1] + " in " + Double.toString((te - ts) / 1000.0) + " s");
 
         //need to use same tx scope if you are reusing vertex objects, otherwise
         //you would need to re-read the vertexes in the new transaction where you are creating
