@@ -293,7 +293,7 @@ public class DynamoTest {
 
         final long tClose = System.currentTimeMillis();
 
-        System.out.println("Closed graph in " + Double.toString((tClose - tSchema) / 1000.0) + " s");
+        System.out.println("Closed graph in " + Double.toString((tClose - tImport) / 1000.0) + " s");
 
         //need to use same tx scope if you are reusing vertex objects, otherwise
         //you would need to re-read the vertexes in the new transaction where you are creating
