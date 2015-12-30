@@ -1,5 +1,6 @@
 package com.swipely;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -9,6 +10,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Transaction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.io.IoCore;
 
 import com.thinkaurelius.titan.core.EdgeLabel;
 import com.thinkaurelius.titan.core.Multiplicity;
@@ -25,13 +27,13 @@ public class DynamoTest {
     private static final String TICKET_VERTEX_LABEL = "ticket";
 
     public static void main(String[] args) throws InterruptedException {
-        final Integer data_size = Integer.valueOf(100_000);
-        final int edgesPerVertex = 10;
-        //back of hand: at least two columns per vertex, and two more columns per edge
-        //for the forward and reverse edges. With 1M edges, this means 2M columns for edges and
-        //200k columns at least for vertices. Double for margin and end up with estimated
-        //mutations of 5M mutations
-        final Integer mutations = Integer.valueOf(5_000_000);
+        final Integer data_size = Integer.valueOf(600_000);
+        // Tail gators for all-time has ~600k vertices + 1.6M edges
+        // back of hand: at least two columns per vertex, and two more columns per edge
+        // for the forward and reverse edges. With 1.6M edges, this means 3M columns for edges and
+        // 1.2M columns at least for vertices. Round up and double for margin and end up with estimated
+        // mutations of 10M mutations
+        final Integer mutations = Integer.valueOf(10_000_000);
 
         final BaseConfiguration conf = new BaseConfiguration();
         conf.setProperty("storage.dynamodb.prefix", "t_crm_titan");
@@ -84,6 +86,8 @@ public class DynamoTest {
         // conf.setProperty("cluster.max-partitions", "32")
         conf.setProperty("ids.flush", "false");
         final TitanGraph g = TitanFactory.open(conf);
+
+        final long tStart = System.currentTimeMillis();
 
         final TitanManagement mgmt = g.openManagement();
 
@@ -269,43 +273,30 @@ public class DynamoTest {
         // Order.decr,dateKey,ticketIdKey);
 
         mgmt.commit();
-        System.out.println("Finished setting schema. Making data");
 
-        final List<Vertex> tickets = new ArrayList<Vertex>();
+        final long tSchema = System.currentTimeMillis();
 
-        // lets use the same seed for consistent order
-        final Random rand = new Random(1000);
+        System.out.println("Set schema in " + Double.toString((tSchema - tStart) / 1000.0) + " s");
 
-        final int numVertices = data_size.intValue();
-        long ts = System.currentTimeMillis();
-        // start a new transaction
-        final TitanTransaction tx = g.newTransaction();
-        for (int i = 0; i < numVertices; i++) {
-            tickets.add(tx.addVertex(TICKET_VERTEX_LABEL));
+        try {
+            g.io(IoCore.graphson()).readGraph("/tmp/tinkergraph.json");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        for (int i = 0; i < numVertices; i++) {
-            final Vertex t1 = tickets.get(i);
-            for (int j = 0; j < edgesPerVertex; j++) {
-                //choose target avoiding self loops
-                final int t2_i = (i + 1 + rand.nextInt(numVertices - 1)) % numVertices;
-                final Vertex t2 = tickets.get(t2_i);
-                t1.addEdge(TICKETS_EDGE_LABEL, t2);
-            }
-        }
-        final long te = System.currentTimeMillis();
-        System.out.println("committing edges");
-        tx.commit();
-        //need to use same tx scope if you are reusing vertex objects, otherwise
-        //you would need to re-read the vertexes in the new transaction where you are creating
-        //edges.
-        final long tf = System.currentTimeMillis();
-        System.out.println("Made " + data_size.toString() + " vertices and " + Integer.toString(edgesPerVertex) + " times as many edges in " + Double.toString((te - ts) / 1000.0) + " s and committed in "
-                + Double.toString((tf - te) / 1000.0) + " s");
+        final long tImport = System.currentTimeMillis();
+
+        System.out.println("Imported tail gators all time in " + Double.toString((tImport - tSchema) / 1000.0) + " s");
 
         System.out.println("Closing...");
         g.close();
 
-        System.out.println("Tada - inserted ${data_size} tickets and ${edge_size} edges per ticket");
+        final long tClose = System.currentTimeMillis();
+
+        System.out.println("Closed graph in " + Double.toString((tClose - tSchema) / 1000.0) + " s");
+
+        //need to use same tx scope if you are reusing vertex objects, otherwise
+        //you would need to re-read the vertexes in the new transaction where you are creating
+        //edges.
     }
 }
