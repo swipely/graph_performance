@@ -45,7 +45,16 @@ graph = TitanFactory.open(config_file)
 all_guests = graph.traversal.V.has('store_pretty_url', 'blue-star-cafe-and-pub-seattle').outE('guest_lists').has('guest_list_id', 'all').inV.next
 
 startup_time = ((Time.now - start) * 1000).round(2)
-duration = Benchmark.realtime { query(graph, all_guests, query_by, order, limit).to_a.last }
+
+duration = Benchmark.realtime do
+  # Note: tried doing this the other way (querying for vertices then retrieving the members edge, but it was much slower)
+  query(graph, all_guests, query_by, order, limit).each_with_index do |edge, i|
+    # get the guest_id value from the vertex
+    edge.get_vertex(1).property('guest_id').value
+    # get the query_by value from the edge
+    edge.property(ARGV[1]).value
+  end
+end
 
 puts({ startup_time_ms: startup_time, query_duration_ms: (duration * 1000).round(2) }.to_json)
 
