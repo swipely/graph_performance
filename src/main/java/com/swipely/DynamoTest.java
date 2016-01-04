@@ -18,7 +18,7 @@ public class DynamoTest {
     public static void main(String[] args) throws InterruptedException {
         final TitanGraph g = TitanFactory.open(getConf());
 
-        if (args[0] == "true")
+        if (args[0].equals("true"))
         {
             System.out.println("Setting Titan schema!");
             setSchema(g);
