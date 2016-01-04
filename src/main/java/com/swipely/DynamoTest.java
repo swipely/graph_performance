@@ -180,9 +180,9 @@ public class DynamoTest {
         //
 
         mgmt.makeVertexLabel("store_guest_list").make();
-        final VertexLabel store = mgmt.makeVertexLabel("store").make();
-        final VertexLabel brand = mgmt.makeVertexLabel("brand").make();
-        final VertexLabel merchant = mgmt.makeVertexLabel("merchant").make();
+        final VertexLabel store = mgmt.makeVertexLabel("store").partition().make();
+        final VertexLabel brand = mgmt.makeVertexLabel("brand").partition().make();
+        final VertexLabel merchant = mgmt.makeVertexLabel("merchant").partition().make();
         final VertexLabel timezone = mgmt.makeVertexLabel("timezone").make();
 
         // data in stores
@@ -302,8 +302,8 @@ public class DynamoTest {
         conf.setProperty("ids.block-size", data_size.toString());
         conf.setProperty("storage.write-time", "1 ms");
         conf.setProperty("storage.read-time", "1 ms");
-        // conf.setProperty("cluster.partition", "true")
-        // conf.setProperty("cluster.max-partitions", "32")
+        conf.setProperty("cluster.partition", "true");
+        conf.setProperty("cluster.max-partitions", "32");
         conf.setProperty("ids.flush", "false");
 
         return conf;
