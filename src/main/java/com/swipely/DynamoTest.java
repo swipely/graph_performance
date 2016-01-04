@@ -37,6 +37,7 @@ public class DynamoTest {
 
         System.out.println("Imported " + args[1] + " in " + Double.toString((te - ts) / 1000.0) + " s");
 
+        System.exit(0);
         //need to use same tx scope if you are reusing vertex objects, otherwise
         //you would need to re-read the vertexes in the new transaction where you are creating
         //edges.
