@@ -48,11 +48,15 @@ startup_time = ((Time.now - start) * 1000).round(2)
 
 duration = Benchmark.realtime do
   # Note: tried doing this the other way (querying for vertices then retrieving the members edge, but it was much slower)
-  query(graph, all_guests, query_by, order, limit).each_with_index do |edge, i|
+  query(graph, all_guests, query_by, order, limit).each do |edge|
     # get the guest_id value from the vertex
     edge.get_vertex(1).property('guest_id').value
-    # get the query_by value from the edge
-    edge.property(ARGV[1]).value
+
+    # get all properties
+    edge.properties.each do |property|
+      property.property_key.name
+      property.value
+    end
   end
 end
 
