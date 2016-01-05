@@ -53,12 +53,16 @@ duration = Benchmark.realtime do
     prop = vertex.property('guest_id')
     if prop.present?
       prop.value
-    else
-      puts "No guest_id for vertex: #{vertex.id}"
+    #else
+      #puts "No guest_id for vertex: #{vertex.id}"
     end
 
     # get all properties
-    puts edge.properties.map { |property| "#{property.property_key.name} = #{property.value}" }.join(', ')
+    #puts edge.properties.map { |property| "#{property.property_key.name} = #{property.value}" }.join(', ')
+    edge.properties.each do |property|
+      property.property_key.name
+      property.value
+    end
   end
 end
 
