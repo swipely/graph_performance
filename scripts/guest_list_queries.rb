@@ -41,7 +41,7 @@ all_guests = graph.traversal.V.
                inV.
                next
 
-puts "Total members of all guests list: #{graph.traversal.V(all_guests.id).out_e('members').to_a.count}"
+#puts "Total members of all guests list: #{graph.traversal.V(all_guests.id).out_e('members').to_a.count}"
 
 startup_time = ((Time.now - start) * 1000).round(2)
 
