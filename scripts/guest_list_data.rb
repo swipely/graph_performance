@@ -15,6 +15,21 @@ java_import 'org.apache.tinkerpop.gremlin.structure.Vertex'
 
 $logger = Logger.new(STDOUT)
 
+# Specifies which directions an edge property is NOT indexed in
+NonIndexedDirection = Struct.new(:asc, :desc) do
+  def self.bidirectional
+    new(true, true)
+  end
+
+  def negate
+    self.class.new(!asc, !desc)
+  end
+
+  def both?
+    asc && desc
+  end
+end
+
 class KPI
   def self.value_of(*kpi_names)
     kpi_names.map { |kpi_name| kpis[kpi_name] }
@@ -29,12 +44,20 @@ class KPI
 
   def build_schema(mgmt, members_edge, not_indexed)
     property = mgmt.make_property_key(name).data_type(@type).make
-    if not_indexed[name]
-      $logger.debug "Building non-indexed members edge property: #{name}"
-    else
-      $logger.debug "Building indexed members edge property: #{name}"
-      mgmt.build_edge_index(members_edge, "members_by_#{name}_DESC", Direction::OUT, Order.decr, property)
+    non_indexed_direction = not_indexed[name]
+
+    if non_indexed_direction.both?
+      $logger.debug "Building no indexes for members edge property: #{name}"
+    end
+
+    if !non_indexed_direction.asc
+      $logger.debug "Building ASC indexed members edge property: #{name}"
       mgmt.build_edge_index(members_edge, "members_by_#{name}_ASC", Direction::OUT, Order.incr, property)
+    end
+
+    if !non_indexed_direction.desc
+      $logger.debug "Building DESC indexed members edge property: #{name}"
+      mgmt.build_edge_index(members_edge, "members_by_#{name}_DESC", Direction::OUT, Order.decr, property)
     end
   end
 
@@ -172,10 +195,17 @@ OptionParser.new do |opts|
 
   opts.on('-I', '--non-indexed [KPIs]', 'Do not build VCIs for list sorting properties') do |non_indexed_props|
     if non_indexed_props.nil?
-      options[:not_indexed].default = true
+      options[:not_indexed].default = NonIndexedDirection.bidirectional
     else
-      non_indexed_props.split(',').each { |prop| options[:not_indexed][prop] = true }
-      options[:not_indexed].default = false
+      non_indexed_props.split(',').each do |prop|
+        name, dir = prop.split(':')
+        if dir
+          options[:not_indexed][name] = NonIndexedDirection.new(dir == 'asc', dir == 'desc')
+        else
+          options[:not_indexed][name] = NonIndexedDirection.bidirectional
+        end
+      end
+      options[:not_indexed].default = NonIndexedDirection.bidirectional.negate
     end
   end
 
