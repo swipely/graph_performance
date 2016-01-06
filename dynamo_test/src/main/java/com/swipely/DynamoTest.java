@@ -8,7 +8,10 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.io.IoCore;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.GZIPInputStream;
 
 public class DynamoTest {
 
@@ -27,8 +30,9 @@ public class DynamoTest {
         }
 
         final long ts = System.currentTimeMillis();
-        try {
-            g.io(IoCore.graphson()).readGraph(args[1]);
+        try (final InputStream gzipStream = new FileInputStream(args[1])){
+            final GZIPInputStream deflatedStream = new GZIPInputStream(gzipStream);
+            g.io(IoCore.graphson()).reader().create().readGraph(deflatedStream, g);
         } catch (IOException e) {
             e.printStackTrace();
         }
