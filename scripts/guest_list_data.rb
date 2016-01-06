@@ -29,7 +29,10 @@ class KPI
 
   def build_schema(mgmt, members_edge, not_indexed)
     property = mgmt.make_property_key(name).data_type(@type).make
-    unless not_indexed
+    if not_indexed[name]
+      $logger.debug "Building non-indexed members edge property: #{name}"
+    else
+      $logger.debug "Building indexed members edge property: #{name}"
       mgmt.build_edge_index(members_edge, "members_by_#{name}_DESC", Direction::OUT, Order.decr, property)
       mgmt.build_edge_index(members_edge, "members_by_#{name}_ASC", Direction::OUT, Order.incr, property)
     end
@@ -111,14 +114,14 @@ def define_vertex(mgmt, label, not_partitioned)
   vertex.make
 end
 
-def populate_graph(graph, num_guests, kpis)
-  $logger.debug 'Populating the graph'
+def populate_graph(graph, num_guests, kpis, store)
+  $logger.debug "Populating the graph for: #{store}"
   random = Random.new(System.current_time_millis)
   log_slice = [[(num_guests / 10), 1].max, 1000].min
 
   transaction(graph) do |graph|
     store_vertex = graph.add_vertex('store')
-    store_vertex.property('store_pretty_url', 'blue-star-cafe-and-pub-seattle')
+    store_vertex.property('store_pretty_url', store)
 
     all_guests_id = 'all'
     all_guests = graph.add_vertex('store_guest_list')
@@ -139,7 +142,7 @@ def populate_graph(graph, num_guests, kpis)
       end
     end
   end
-  $logger.debug 'Done populating the graph'
+  $logger.debug "Done populating the graph for: #{store}"
 end
 
 def transaction(graph)
@@ -150,7 +153,12 @@ ensure
   graph.tx.commit
 end
 
-options = { dynamo_config: 'config/dynamo_local.properties', not_indexed: false, not_partitioned: false }
+options = {
+  dynamo_config: 'config/dynamo_local.properties',
+  not_indexed: {}.tap { |h| h.default = false },
+  not_partitioned: false
+}
+
 OptionParser.new do |opts|
   opts.banner = "Usage: #{__FILE__} [options]"
 
@@ -162,8 +170,13 @@ OptionParser.new do |opts|
     options[:kpis] = kpi_names.split(',')
   end
 
-  opts.on('-I', '--no-index', 'Do not build VCIs for list sorting properties') do |not_indexed|
-    options[:not_indexed] = true
+  opts.on('-I', '--non-indexed [KPIs]', 'Do not build VCIs for list sorting properties') do |non_indexed_props|
+    if non_indexed_props.nil?
+      options[:not_indexed].default = true
+    else
+      non_indexed_props.split(',').each { |prop| options[:not_indexed][prop] = true }
+      options[:not_indexed].default = false
+    end
   end
 
   opts.on('-P', '--no-partition', 'Do not partition the store/guest_list vertices') do |not_partitioned|
@@ -174,6 +187,10 @@ OptionParser.new do |opts|
     options[:dynamo_config] = file_path
   end
 
+  opts.on('-s' '--stores [PRETTY_URLS]', 'Store Pretty URL(s)') do |pretty_urls|
+    options[:stores] = pretty_urls.split(',')
+  end
+
   opts.on_tail('-h', '--help', 'Show this message') do
     puts opts
     exit
@@ -182,14 +199,19 @@ end.parse!
 
 fail OptionParser::MissingArgument if options[:guests_count].nil?
 fail OptionParser::MissingArgument if options[:kpis].nil? || options[:kpis].empty?
+options[:stores] ||= ['blue-star-cafe-and-pub-seattle']
+fail OptionParser::MissingArgument if options[:stores].empty?
 
 $logger.debug "Generating guest list data, options = #{options.inspect}"
 
+graph = TitanFactory.open(options[:dynamo_config])
+
 num_guests = options[:guests_count]
 kpis = KPI.value_of(*options[:kpis])
-
-graph = TitanFactory.open(options[:dynamo_config])
 build_schema(graph, kpis, options[:not_indexed], options[:not_partitioned])
-populate_graph(graph, num_guests, kpis)
+
+options[:stores].each do |store|
+  populate_graph(graph, num_guests, kpis, store)
+end
 
 exit!
