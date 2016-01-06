@@ -102,13 +102,15 @@ end]
 
 startup_time = ((Time.now - start) * 1000).round(2)
 
-(stores * 2).each do |store|
+results = (stores * 2).map do |store|
   duration = Benchmark.realtime do
     # Note: tried doing this the other way (querying for vertices then retrieving the members edge, but it was much slower)
     query(graph, all_guests_by_store[store], query_by, order, limit, read_edge)
   end
 
-  puts({ startup_time_ms: startup_time, store: store, query_duration_ms: (duration * 1000).round(2) }.to_json)
+  { startup_time_ms: startup_time, store: store, query_duration_ms: (duration * 1000).round(2) }
 end
+
+puts results.to_json
 
 exit!
