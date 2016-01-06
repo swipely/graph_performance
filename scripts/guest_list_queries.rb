@@ -83,34 +83,28 @@ stores = (ARGV[4] || '').split(',')
 
 graph = TitanFactory.open(config_file)
 
-all_guests_by_store = Hash[stores.map do |store|
-  all_guests = graph.traversal.V.
-    has_label('store').
-    has('store_pretty_url', store).
-    outE('guest_lists').
-    has('guest_list_id', 'all').
-    inV.
-    next
-
-  # $stderr.puts(
-  #   "Total members of all guests list at store #{store}: " +
-  #   "#{graph.traversal.V(all_guests.id).out_e('members').to_a.count}"
-  # )
-
-  [store, all_guests]
-end]
-
 startup_time = ((Time.now - start) * 1000).round(2)
 
 results = (stores * 2).map do |store|
-  duration = Benchmark.realtime do
-    # Note: tried doing this the other way (querying for vertices then retrieving the members edge, but it was much slower)
-    query(graph, all_guests_by_store[store], query_by, order, limit, read_edge)
+  all_guests = nil
+  list_duration = Benchmark.realtime do
+    all_guests = graph.traversal.V.has_label('store').has('store_pretty_url', store).outE('guest_lists').has('guest_list_id', 'all').inV.next
   end
 
-  { startup_time_ms: startup_time, store: store, query_duration_ms: (duration * 1000).round(2) }
+  duration = Benchmark.realtime do
+    # Note: tried doing this the other way (querying for vertices then retrieving the members edge, but it was much slower)
+    query(graph, all_guests, query_by, order, limit, read_edge)
+  end
+
+  total_duration_ms = ((list_duration + duration) * 1000).round(2)
+  {
+    startup_time_ms: startup_time,
+    store: store,
+    query_duration_ms: (duration * 1000).round(2),
+    total_duration_ms: total_duration_ms
+  }
 end
 
-puts results.to_json
+puts "RESULT~#{results.to_json}"
 
 exit!

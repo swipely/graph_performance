@@ -19,13 +19,18 @@ end
 results = Hash[args.map do |arguments|
   puts "Running query: #{arguments.inspect}"
   output = `bundle exec ruby #{arguments['script']} #{arguments['config_file']} #{arguments['query_by']} #{arguments['order']} #{arguments['limit']} #{arguments['stores']}`
-  puts "output = [#{output}]"
-  [arguments, output]
+  result = output.split("\n").find { |line| line.start_with?('RESULT~') }
+  if result
+    [arguments, result.split('~').last]
+  else
+    $stderr.puts "No RESULT found: #{output}"
+    [arguments, '[]']
+  end
 end]
 
 results.each do |key, value|
   results = JSON.parse(value)
   results.each do |stats|
-    puts "#{key.inspect}, #{stats['store']}, #{stats['query_duration_ms']}"
+    puts "#{key.inspect}, #{stats['store']}, #{stats['startup_time_ms']}, #{stats['query_duration_ms']}, #{stats['total_duration_ms']}"
   end
 end
