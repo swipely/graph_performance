@@ -19,9 +19,17 @@ public class DynamoTest {
     private static final String TICKET_VERTEX_LABEL = "ticket";
 
     public static void main(String[] args) throws InterruptedException {
-        final TitanGraph g = TitanFactory.open(getConf());
+        if (args.length < 1) {
+            throw new IllegalArgumentException("Usage: <java> com.swipely.DynamoTest <graphson_file> [set_schema] [dynamo_prefix]");
+        }
 
-        if (args[0].equals("true"))
+        boolean setSchema = (args.length > 1) && (args[1].equals("true"));
+        String dynamoPrefix = (args.length > 2) ? args[2] : "t_crm_titan";
+
+        final TitanGraph g = TitanFactory.open(getConf(dynamoPrefix));
+        System.out.println("Loading Graph: Dynamo Prefix = " + dynamoPrefix);
+
+        if (setSchema)
         {
             System.out.println("Setting Titan schema!");
             setSchema(g);
@@ -29,8 +37,9 @@ public class DynamoTest {
             System.out.println("Assuming Titan schema already set.");
         }
 
+        System.out.println("Starting the import");
         final long ts = System.currentTimeMillis();
-        try (final InputStream gzipStream = new FileInputStream(args[1])){
+        try (final InputStream gzipStream = new FileInputStream(args[0])){
             final GZIPInputStream deflatedStream = new GZIPInputStream(gzipStream);
             g.io(IoCore.graphson()).reader().create().readGraph(deflatedStream, g);
         } catch (IOException e) {
@@ -238,7 +247,7 @@ public class DynamoTest {
         System.out.println("Set schema in " + Double.toString((te - ts) / 1000.0) + " s");
     }
 
-    private static BaseConfiguration getConf() {
+    private static BaseConfiguration getConf(String dynamoPrefix) {
         final Integer data_size = Integer.valueOf(600_000);
         // Tail gators for all-time has ~600k vertices + 1.6M edges
         // back of hand: at least two columns per vertex, and two more columns per edge
@@ -248,7 +257,7 @@ public class DynamoTest {
         final Integer mutations = Integer.valueOf(10_000_000);
 
         final BaseConfiguration conf = new BaseConfiguration();
-        conf.setProperty("storage.dynamodb.prefix", "t_crm_titan");
+        conf.setProperty("storage.dynamodb.prefix", dynamoPrefix);
         conf.setProperty("schema.default", "none");
         conf.setProperty("storage.batch-loading", "true");
 
